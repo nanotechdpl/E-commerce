@@ -1,0 +1,36 @@
+const express = require("express");
+// import * as adminController from './admins.controller';
+const adminController = require("./admins.controller");
+const isAdmin = require("../../../middlewares/isAdminMiddleWare");
+
+const router = express.Router();
+
+router.get("/", adminController.getAll);
+
+router.post("/sub-user-check", adminController.isSubAdminCodeValid);
+
+router.get("/sub-admin", adminController.getSubAdmin);
+
+router.get("/:id", adminController.get);
+
+router.post("/", adminController.create);
+
+router.put("/:id", adminController.update);
+
+router.delete("/:id", adminController.remove);
+
+router.post("/login", adminController.login);
+
+router.post("/forgot-password-request", adminController.requestPasswordReset);
+
+router.post(
+  "/verify-forgot-password-otp",
+  adminController.verifyPasswordResetOTP
+);
+
+router.post("/reset-password", adminController.resetPassword);
+
+router.post("/change-password", isAdmin, adminController.changePassword); // Apply authMiddleware
+
+// export default router;
+module.exports = router;
