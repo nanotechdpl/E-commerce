@@ -1,0 +1,33 @@
+{
+    "name": "chat-service",
+    "version": "1.0.0",
+    "description": "Real-time chat microservice",
+    "main": "src/app.js",
+    "scripts": {
+        "start": "node start.js",
+        "dev": "nodemon start.js",
+        "test": "jest",
+        "test:upload": "node test-file-upload.js",
+        "seed": "node src/scripts/seedData.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.6.1",
+        "express": "^4.18.2",
+        "helmet": "^7.2.0",
+        "ioredis": "^5.6.1",
+        "joi": "^17.11.0",
+        "moment": "^2.29.4",
+        "mongoose": "^7.6.3",
+        "multer": "^1.4.5-lts.1",
+        "node-cron": "^4.2.0",
+        "socket.io": "^4.7.2",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "axios": "^1.6.0",
+        "form-data": "^4.0.0",
+        "jest": "^29.7.0",
+        "nodemon": "^3.0.1"
+    }
+}

@@ -1,0 +1,90 @@
+_format_version: '3.0'
+_transform: true
+
+services:
+  - name: customer-service
+    url: http://customer-service:3001
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+    routes:
+      - name: customer-routes
+        paths:
+          - /api/customers
+
+  - name: cache-service
+    url: http://cache-service:3002
+    routes:
+      - name: cache-routes
+        paths:
+          - /api/cache
+
+  - name: order-service
+    url: http://order-service:3003
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 200
+    routes:
+      - name: order-routes
+        paths:
+          - /api/orders
+    
+  - name: order-service-prisma
+    url: http://order-service-prisma:3007
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 200
+    routes:
+      - name: order-routes-prisma
+        paths:
+          - /api/orders-prisma
+
+  - name: payment-service
+    url: http://payment-service:3004
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 50
+    routes:
+      - name: payment-routes
+        paths:
+          - /api/payments
+
+  - name: chat-service
+    url: http://chat-service:3005
+    routes:
+      - name: chat-routes
+        paths:
+          - /api/chat
+
+  - name: file-service
+    url: http://file-service:3006
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 150
+    routes:
+      - name: file-routes
+        paths:
+          - /api/files
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - '*'
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Auth-Token
+      credentials: true

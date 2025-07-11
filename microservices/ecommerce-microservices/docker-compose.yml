@@ -1,0 +1,793 @@
+# # #version: '3.8'
+# # services:
+# #   # API Gateway
+# #   kong:
+# #     image: kong:3.4
+# #     environment:
+# #       KONG_DATABASE: "off"
+# #       KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+# #       KONG_PROXY_ACCESS_LOG: /dev/stdout
+# #       KONG_ADMIN_ACCESS_LOG: /dev/stdout
+# #       KONG_PROXY_ERROR_LOG: /dev/stderr
+# #       KONG_ADMIN_ERROR_LOG: /dev/stderr
+# #       KONG_ADMIN_LISTEN: 0.0.0.0:8001
+# #     volumes:
+# #       - ./kong:/kong
+# #     ports:
+# #       - "8000:8000"
+# #       - "8001:8001"
+# #     depends_on:
+# #       - customer-service
+# #       - order-service
+# #       - payment-service
+# #       - chat-service
+# #       - file-service
+
+# #   # Databases
+# #   redis:
+# #     image: redis:7-alpine
+# #     ports:
+# #       - "6379:6379"
+
+# #   postgres-customer:
+# #     image: postgres:15
+# #     environment:
+# #       POSTGRES_DB: customer_db
+# #       POSTGRES_USER: customer_user
+# #       POSTGRES_PASSWORD: customer_pass
+# #     ports:
+# #       - "5432:5432"
+# #     volumes:
+# #       - customer_data:/var/lib/postgresql/data
+
+# #   postgres-order:
+# #     image: postgres:15
+# #     environment:
+# #       POSTGRES_DB: order_db
+# #       POSTGRES_USER: order_user
+# #       POSTGRES_PASSWORD: order_pass
+# #     ports:
+# #       - "5433:5432"
+# #     volumes:
+# #       - order_data:/var/lib/postgresql/data
+
+# #   postgres-payment:
+# #     image: postgres:15
+# #     environment:
+# #       POSTGRES_DB: payment_db
+# #       POSTGRES_USER: payment_user
+# #       POSTGRES_PASSWORD: payment_pass
+# #     ports:
+# #       - "5434:5432"
+# #     volumes:
+# #       - payment_data:/var/lib/postgresql/data
+
+# #   postgres-file:
+# #     image: postgres:15
+# #     environment:
+# #       POSTGRES_DB: file_db
+# #       POSTGRES_USER: file_user
+# #       POSTGRES_PASSWORD: file_pass
+# #     ports:
+# #       - "5435:5432"
+# #     volumes:
+# #       - file_data:/var/lib/postgresql/data
+
+# #   mongodb:
+# #     image: mongo:7
+# #     environment:
+# #       MONGO_INITDB_ROOT_USERNAME: chat_user
+# #       MONGO_INITDB_ROOT_PASSWORD: chat_pass
+# #       MONGO_INITDB_DATABASE: chat_db
+# #     ports:
+# #       - "27017:27017"
+# #     volumes:
+# #       - mongo_data:/data/db
+
+# #   # Microservices
+# #   customer-service:
+# #     build: ./services/customer-service
+# #     environment:
+# #       - NODE_ENV=development
+# #       - PORT=3001
+# #       - DB_HOST=postgres-customer
+# #       - DB_PORT=5432
+# #       - DB_NAME=customer_db
+# #       - DB_USER=customer_user
+# #       - DB_PASS=customer_pass
+# #       - REDIS_URL=redis://redis:6379
+# #     ports:
+# #       - "3001:3001"
+# #     depends_on:
+# #       - postgres-customer
+# #       - redis
+
+# #   # cache-service:
+# #   #   build: ./services/cache-service
+# #   #   environment:
+# #   #     - NODE_ENV=development
+# #   #     - PORT=3002
+# #   #     - REDIS_URL=redis://redis:6379
+# #   #   ports:
+# #   #     - "3002:3002"
+# #   #   depends_on:
+# #   #     - redis
+
+# #   order-service:
+# #     build: ./services/order-service
+# #     environment:
+# #       - NODE_ENV=development
+# #       - PORT=3003
+# #       - DB_HOST=postgres-order
+# #       - DB_PORT=5432
+# #       - DB_NAME=order_db
+# #       - DB_USER=order_user
+# #       - DB_PASS=order_pass
+# #     ports:
+# #       - "3003:3003"
+# #     depends_on:
+# #       - postgres-order
+
+# #   payment-service:
+# #     build: ./services/payment-service
+# #     environment:
+# #       - NODE_ENV=development
+# #       - PORT=3004
+# #       - DB_HOST=postgres-payment
+# #       - DB_PORT=5432
+# #       - DB_NAME=payment_db
+# #       - DB_USER=payment_user
+# #       - DB_PASS=payment_pass
+# #     ports:
+# #       - "3004:3004"
+# #     depends_on:
+# #       - postgres-payment
+
+# #   chat-service:
+# #     build: ./services/chat-service
+# #     environment:
+# #       - NODE_ENV=development
+# #       - PORT=3005
+# #       - MONGODB_URI=mongodb://chat_user:chat_pass@mongodb:27017/chat_db?authSource=admin
+# #     ports:
+# #       - "3005:3005"
+# #     depends_on:
+# #       - mongodb
+
+# #   file-service:
+# #     build: ./services/file-service
+# #     environment:
+# #       - NODE_ENV=development
+# #       - PORT=3006
+# #       - DB_HOST=postgres-file
+# #       - DB_PORT=5432
+# #       - DB_NAME=file_db
+# #       - DB_USER=file_user
+# #       - DB_PASS=file_pass
+# #     ports:
+# #       - "3006:3006"
+# #     volumes:
+# #       - file_uploads:/app/uploads
+# #     depends_on:
+# #       - postgres-file
+
+# # volumes:
+# #   customer_data:
+# #   order_data:
+# #   payment_data:
+# #   file_data:
+# #   mongo_data:
+# #   file_uploads:
+  
+
+
+# services:
+#   # API Gateway
+#   kong:
+#     image: kong:3.4
+#     environment:
+#       KONG_DATABASE: "off"
+#       KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+#       KONG_PROXY_ACCESS_LOG: /dev/stdout
+#       KONG_ADMIN_ACCESS_LOG: /dev/stdout
+#       KONG_PROXY_ERROR_LOG: /dev/stderr
+#       KONG_ADMIN_ERROR_LOG: /dev/stderr
+#       KONG_ADMIN_LISTEN: 0.0.0.0:8001
+#     volumes:
+#       - ./kong:/kong
+#     ports:
+#       - "8000:8000"
+#       - "8001:8001"
+#     depends_on:
+#       - customer-service
+#       - order-service
+#       - order-service-prisma
+#       - payment-service
+#       - chat-service
+#       - file-service
+
+#   # Databases
+#   redis:
+#     image: redis:7-alpine
+#     ports:
+#       - "6379:6379"
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "ping"]
+#       interval: 5s
+#       timeout: 30s
+#       retries: 3
+#     networks:
+#     - default
+#     - cache-network
+
+#   postgres-customer:
+#     image: postgres:15
+#     environment:
+#       POSTGRES_DB: customer_db
+#       POSTGRES_USER: customer_user
+#       POSTGRES_PASSWORD: customer_pass
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - customer_data:/var/lib/postgresql/data
+
+#   postgres-order:
+#     image: postgres:15
+#     environment:
+#       POSTGRES_DB: order_db
+#       POSTGRES_USER: order_user
+#       POSTGRES_PASSWORD: order_pass
+#     ports:
+#       - "5433:5432"
+#     volumes:
+#       - order_data:/var/lib/postgresql/data
+
+#   postgres-payment:
+#     image: postgres:15
+#     environment:
+#       POSTGRES_DB: payment_db
+#       POSTGRES_USER: payment_user
+#       POSTGRES_PASSWORD: payment_pass
+#     ports:
+#       - "5434:5432"
+#     volumes:
+#       - payment_data:/var/lib/postgresql/data
+
+#   postgres-file:
+#     image: postgres:15
+#     environment:
+#       POSTGRES_DB: file_db
+#       POSTGRES_USER: file_user
+#       POSTGRES_PASSWORD: file_pass
+#     ports:
+#       - "5435:5432"
+#     volumes:
+#       - file_data:/var/lib/postgresql/data
+    
+#   mongo-express:
+#     image: mongo-express
+#     restart: unless-stopped
+#     environment:
+#       ME_CONFIG_MONGODB_ADMINUSERNAME: chat_user
+#       ME_CONFIG_MONGODB_ADMINPASSWORD: chat_pass
+#       ME_CONFIG_MONGODB_SERVER: mongodb
+#       ME_CONFIG_BASICAUTH_USERNAME: admin
+#       ME_CONFIG_BASICAUTH_PASSWORD: admin
+#     ports:
+#       - "8081:8081"
+#     depends_on:
+#       mongodb:
+#         condition: service_healthy
+
+#   pgadmin:
+#     image: dpage/pgadmin4
+#     restart: unless-stopped
+#     environment:
+#       PGADMIN_DEFAULT_EMAIL: admin@admin.com
+#       PGADMIN_DEFAULT_PASSWORD: admin
+#     ports:
+#       - "5050:80"
+#     volumes:
+#       - pgadmin_data:/var/lib/pgadmin
+
+#   redis-commander:
+#     image: rediscommander/redis-commander:latest
+#     platform: linux/amd64  # Add this line to force amd64 architecture
+#     restart: unless-stopped
+#     environment:
+#       REDIS_HOSTS: redis
+#     ports:
+#       - "8082:8081"
+#     depends_on:
+#       - redis
+
+#   order-service-prisma:
+#     build: .
+#     ports:
+#       - "3007:3007"
+#     environment:
+#       - DATABASE_URL=postgresql://order_user:order_pass@postgres:5432/order_db
+#       - NODE_ENV=development
+#     depends_on:
+#       - postgres
+#     volumes:
+#       - .:/app
+#       - /app/node_modules
+
+#   postgres:
+#     image: postgres:15-alpine
+#     environment:
+#       - POSTGRES_USER=order_user
+#       - POSTGRES_PASSWORD=order_pass
+#       - POSTGRES_DB=order_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+ 
+
+
+#   mongodb:
+#     image: mongo:7
+#     environment:
+#       MONGO_INITDB_ROOT_USERNAME: chat_user
+#       MONGO_INITDB_ROOT_PASSWORD: chat_pass
+#       MONGO_INITDB_DATABASE: chat_db
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       - mongo_data:/data/db
+#     healthcheck:
+#       test: echo 'db.runCommand("ping").ok' | mongosh -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --quiet || exit 1
+#       interval: 5s
+#       timeout: 30s
+#       retries: 3
+
+#   # Microservices
+#   customer-service:
+#     build: ./services/customer-service
+#     environment:
+#       - NODE_ENV=development
+#       - PORT=3001
+#       - DB_HOST=postgres-customer
+#       - DB_PORT=5432
+#       - DB_NAME=customer_db
+#       - DB_USER=customer_user
+#       - DB_PASS=customer_pass
+#       - REDIS_URL=redis://redis:6379
+#     ports:
+#       - "3001:3001"
+#     depends_on:
+#       - postgres-customer
+#       - redis
+
+#   order-service:
+#     build: ./services/order-service
+#     environment:
+#       - NODE_ENV=development
+#       - PORT=3003
+#       - DB_HOST=postgres-order
+#       - DB_PORT=5432
+#       - DB_NAME=order_db
+#       - DB_USER=order_user
+#       - DB_PASS=order_pass
+#     ports:
+#       - "3003:3003"
+#     depends_on:
+#       - postgres-order
+
+#   payment-service:
+#     build: ./services/payment-service
+#     environment:
+#       - NODE_ENV=development
+#       - PORT=3004
+#       - DB_HOST=postgres-payment
+#       - DB_PORT=5432
+#       - DB_NAME=payment_db
+#       - DB_USER=payment_user
+#       - DB_PASS=payment_pass
+#     ports:
+#       - "3004:3004"
+#     depends_on:
+#       - postgres-payment
+
+#   chat-service:
+#     build: ./services/chat-service
+#     environment:
+#       - NODE_ENV=development
+#       - PORT=3005
+#       - MONGODB_URI=mongodb://chat_user:chat_pass@mongodb:27017/chat_db?authSource=admin
+#     ports:
+#       - "3005:3005"
+#     depends_on:
+#       - mongodb
+
+#   file-service:
+#     build: ./services/file-service
+#     environment:
+#       - NODE_ENV=development
+#       - PORT=3006   
+#       - DB_HOST=postgres-file
+#       - DB_PORT=5432
+#       - DB_NAME=file_db
+#       - DB_USER=file_user
+#       - DB_PASS=file_pass
+#       # Google Cloud Storage Configuration
+#       - GOOGLE_CLOUD_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID}
+#       - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
+#       - GOOGLE_CLOUD_KEY_FILE=/app/keys/gcs-key.json
+#       # File Upload Configuration
+#       - MAX_FILE_SIZE=52428800  # 50MB
+#       - JWT_SECRET=${JWT_SECRET:-default-jwt-secret}
+#     ports:
+#       - "3006:3006"  
+#     volumes:
+#       # Mount the Google Cloud Service Account key file
+#       - ./keys/gcs-service-account-key.json:/app/keys/gcs-key.json:ro
+#       # Optional: Mount for temporary file storage (though we're using memory storage)
+#       - file_temp:/tmp
+#     depends_on:
+#       - postgres-file
+#   cache-service:
+#     build: ./services/cache-service
+#     environment:
+#       # - NODE_ENV=development
+#       # - PORT=3002
+#       # - REDIS_URL=redis://redis:6379
+#       - REDIS_URL=redis://redis:6379
+#       - NODE_ENV=development
+#       - REDIS_HOST=redis
+#       - REDIS_PORT=6379
+#       - REDIS_DB=0
+#     ports:
+#       - "3002:3002"
+#     depends_on:
+#       - redis
+# volumes:
+#   customer_data:
+#   order_data:
+#   payment_data:
+#   file_data:
+#   mongo_data:
+#   file_temp:  # Added for temporary file storage
+#   pgadmin_data:
+
+# networks:
+#   cache-network:
+#     driver: bridge
+
+
+
+
+
+
+
+
+services:
+  # API Gateway
+  kong:
+    image: kong:3.4
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    volumes:
+      - ./kong:/kong
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    depends_on:
+      - customer-service
+      - order-service
+      - order-service-prisma
+      - payment-service
+      - chat-service
+      - file-service
+    networks:
+      - default
+
+  # Databases
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 3
+    networks:
+      - default
+      - cache-network
+
+  postgres-customer:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: customer_user
+      POSTGRES_PASSWORD: customer_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - customer_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  postgres-order:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: order_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - order_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  postgres-payment:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: payment_user
+      POSTGRES_PASSWORD: payment_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - payment_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  postgres-file:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: file_db
+      POSTGRES_USER: file_user
+      POSTGRES_PASSWORD: file_pass
+    ports:
+      - "5435:5432"
+    volumes:
+      - file_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  # Separate PostgreSQL for Prisma Order Service
+  postgres-prisma:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: order_pass
+      POSTGRES_DB: order_db
+    ports:
+      - "5436:5432"  # Different port to avoid conflicts
+    volumes:
+      - postgres_prisma_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_user -d order_db"]
+      interval: 5s
+      timeout: 30s
+      retries: 3
+    networks:
+      - default
+
+  mongodb:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: chat_user
+      MONGO_INITDB_ROOT_PASSWORD: chat_pass
+      MONGO_INITDB_DATABASE: chat_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh -u chat_user -p chat_pass --quiet || exit 1
+      interval: 5s
+      timeout: 30s
+      retries: 3
+    networks:
+      - default
+
+  # Admin Tools
+  mongo-express:
+    image: mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: chat_user
+      ME_CONFIG_MONGODB_ADMINPASSWORD: chat_pass
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - default
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - default
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: redis
+    ports:
+      - "8082:8081"
+    depends_on:
+      - redis
+    networks:
+      - default
+      - cache-network
+
+  # Microservices
+  customer-service:
+    build: ./services/customer-service
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DB_HOST=postgres-customer
+      - DB_PORT=5432
+      - DB_NAME=customer_db
+      - DB_USER=customer_user
+      - DB_PASS=customer_pass
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres-customer
+      - redis
+    networks:
+      - default
+      - cache-network
+
+  order-service:
+    build: ./services/order-service
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DB_HOST=postgres-order
+      - DB_PORT=5432
+      - DB_NAME=order_db
+      - DB_USER=order_user
+      - DB_PASS=order_pass
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres-order
+    networks:
+      - default
+
+  order-service-prisma:
+
+    build:
+      context: ./services/order-service-prisma
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://order_user:order_pass@postgres-prisma:5432/order_db?schema=public&connection_limit=5&pool_timeout=10
+      - PORT=3007
+      - NODE_ENV=development
+    ports:
+      - "3007:3007"
+    depends_on:
+      postgres-prisma:
+        condition: service_healthy
+    volumes:
+      - ./services/order-service-prisma:/app
+      - /app/node_modules
+    networks:
+      - default
+    command: sh -c "sleep 5 && npx prisma migrate deploy && npm start"
+
+  payment-service:
+    build: ./services/payment-service
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - DB_HOST=postgres-payment
+      - DB_PORT=5432
+      - DB_NAME=payment_db
+      - DB_USER=payment_user
+      - DB_PASS=payment_pass
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres-payment
+    networks:
+      - default
+
+  chat-service:
+    build: ./services/chat-service
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - MONGODB_URI=mongodb://chat_user:chat_pass@mongodb:27017/chat_db?authSource=admin
+    ports:
+      - "3005:3005"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - default
+
+  file-service:
+    build: ./services/file-service
+    environment:
+      - NODE_ENV=development
+      - PORT=3006   
+      - DB_HOST=postgres-file
+      - DB_PORT=5432
+      - DB_NAME=file_db
+      - DB_USER=file_user
+      - DB_PASS=file_pass
+      # Google Cloud Storage Configuration
+      - GOOGLE_CLOUD_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID:-}
+      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-}
+      - GOOGLE_CLOUD_KEY_FILE=/app/keys/gcs-key.json
+      # File Upload Configuration
+      - MAX_FILE_SIZE=52428800  # 50MB
+      - JWT_SECRET=${JWT_SECRET:-default-jwt-secret}
+    ports:
+      - "3006:3006"  
+    volumes:
+      # Mount the Google Cloud Service Account key file (optional)
+      - ./keys/gcs-service-account-key.json:/app/keys/gcs-key.json:ro
+      # Optional: Mount for temporary file storage
+      - file_temp:/tmp
+    depends_on:
+      - postgres-file
+    networks:
+      - default
+
+  cache-service:
+    build: ./services/cache-service
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+      - PORT=3002
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    ports:
+      - "3002:3002"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - default
+      - cache-network
+
+volumes:
+  customer_data:
+  order_data:
+  payment_data:
+  file_data:
+  mongo_data:
+  file_temp:
+  pgadmin_data:
+  postgres_prisma_data:
+
+networks:
+  default:
+    driver: bridge
+  cache-network:
+    driver: bridge

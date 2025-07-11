@@ -1,0 +1,104 @@
+ecommerce-microservices/
+├── docker-compose.yml
+├── kong/
+│   ├── kong.yml
+│   └── Dockerfile
+├── services/
+│   ├── customer-service/
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   │   └── customerController.js
+│   │   │   ├── models/
+│   │   │   │   └── Customer.js
+│   │   │   ├── routes/
+│   │   │   │   └── customerRoutes.js
+│   │   │   ├── middleware/
+│   │   │   │   └── auth.js
+│   │   │   └── app.js
+│   │   ├── .dockerignore
+│   │   ├── package.json
+│   │   └── Dockerfile
+│   ├── order-service/
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   │   └── orderController.js
+│   │   │   ├── models/
+│   │   │   │   └── Order.js
+│   │   │   ├── routes/
+│   │   │   │   └── orderRoutes.js
+│   │   │   └── app.js
+│   │   ├── .dockerignore
+│   │   ├── package.json
+│   │   └── Dockerfile
+│   ├── payment-service/
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   │   └── paymentController.js
+│   │   │   ├── models/
+│   │   │   │   └── Payment.js
+│   │   │   ├── routes/
+│   │   │   │   └── paymentRoutes.js
+│   │   │   └── app.js
+|   │   ├── .env   
+│   │   ├── .dockerignore
+│   │   ├── package.json
+│   │   └── Dockerfile
+|   |-- chat-service/
+|   |   ├── src/
+|   |   │   ├── config/
+|   |   │   │   └── database.js
+|   |   │   ├── controllers/
+|   |   │   │   └── chatController.js
+|   |   │   ├── middleware/
+|   |   │   │   ├── errorHandler.js
+|   |   │   │   └── validation.js
+|   |   │   ├── models/
+|   |   │   │   ├── Message.js
+|   |   │   │   └── Room.js
+|   |   │   ├── routes/
+|   |   │   │   └── chatRoutes.js
+|   |   │   ├── socket/
+|   |   │   │   └── socketHandler.js
+|   |   │   └── app.js
+|   |   ├── .env
+|   |   ├── .dockerignore
+|   |   ├── docker-compose.yml
+|   |   ├── Dockerfile
+|   |   └── package.json
+│   ├── file-service/
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   │   └── fileController.js
+│   │   │   ├── models/
+│   │   │   │   └── File.js
+│   │   │   ├── routes/
+│   │   │   │   └── fileRoutes.js
+│   │   │   ├── storage/
+│   │   │   │   └── uploads/
+│   │   │   └── app.js
+│   │   ├── package.json
+|   |   ├── .env
+│   │   ├── .dockerignore
+│   │   └── Dockerfile
+│   └── cache-service/
+│   │   ├── src/
+│   │   │   ├── models/
+│   │   │   │   └── File.js
+│   │   │   ├── controllers/
+│   │   │   │   └── cacheController.js
+│   │   │   ├── routes/
+│   │   │   │   └── cacheRoutes.js
+│   │   │   └── app.js
+│   │   ├── package.json
+|   │   ├── .env
+│   │   ├── .dockerignore
+│       └── Dockerfile
+├── shared/
+│   ├── utils/
+│   │   ├── logger.js
+│   │   ├── validation.js
+│   │   └── constants.js
+│   └── middleware/
+│       ├── errorHandler.js
+│       └── rateLimiter.js
+└── 

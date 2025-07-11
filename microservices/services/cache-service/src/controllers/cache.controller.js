@@ -1,0 +1,1 @@
+const Cache = require('../models/cache.model'); 
