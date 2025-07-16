@@ -51,6 +51,26 @@ const connectDB = async () => {
       )
     `);
 
+
+        await pgPool.query(`
+      CREATE TABLE IF NOT EXISTS payments (
+        payment_id VARCHAR(50) PRIMARY KEY,
+        order_id INTEGER,
+        user_id INTEGER,
+        agency_id INTEGER,
+        amount DECIMAL(10,2) NOT NULL,
+        currency VARCHAR(10) DEFAULT 'USD',
+        payment_method VARCHAR(20) DEFAULT 'paypal',
+        paypal_order_id VARCHAR(100),
+        type VARCHAR(30) DEFAULT 'order', -- order, security_deposit, annual_fee
+        metadata JSONB,
+        status VARCHAR(20) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+
         // Insert sample products
         await pgPool.query(`
       INSERT INTO products (name, description, price, stock_quantity, category) 

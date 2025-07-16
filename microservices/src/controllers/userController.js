@@ -145,6 +145,7 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
+
     const { name, currency, email, password } = req.body;
 
     // Check if the user has provided all the required fields
@@ -179,10 +180,38 @@ const createUser = async (req, res) => {
         exist: true,
       });
     }
+
+    const { name, currency, email, phone, password } = req.body;
+
+    // Check if the user has provided all the required fields
+    if (!name || !currency || !(email || phone) || !password) {
+      return res.status(400).json({
+        title: "Registration error",
+        status: 400,
+        message: "Please fill out all fields (name, currency, email or phone, password)",
+      });
+    }
+
+    // Count existing users with this email or phone
+    const emailCount = email ? await User.countDocuments({ email }) : 0;
+    const phoneCount = phone ? await User.countDocuments({ phone }) : 0;
+    if (emailCount >= 2 || phoneCount >= 2) {
+      return res.status(400).json({
+        title: "Registration error",
+        status: 400,
+        error: "Maximum 2 accounts allowed per email or phone.",
+        exist: true,
+      });
+    }
+
+    // Check if the user already exists as an agency
+    const existingAgency = email ? await Agency.findOne({ email }) : null;
+>>>>>>> faef044f (Initial commit with all microservices files)
     if (existingAgency) {
       return res.status(400).json({
         title: "Agency Creation error",
         status: 400,
+
         error: "This User is already exists as Agency",
       });
     }
@@ -197,6 +226,14 @@ const createUser = async (req, res) => {
     // Generate OTP
     const otp = await generateOTP();
     // console.log('Otp:', otp)
+
+        error: "This User already exists as Agency",
+      });
+    }
+
+    // Generate OTP
+    const otp = await generateOTP();
+
     const templatePath = "user.registration.ejs";
     await OTPModel.updateOne(
       { "userDetails.email": email },
@@ -466,6 +503,7 @@ const sentOTPFor2FA = async (req, res) => {
   }
 };
 
+
 const deleteAccount = async (req, res) => {
   const userId = req.user.id;
   const { password } = req.body;
@@ -523,6 +561,57 @@ const deleteAccount = async (req, res) => {
       successful: false,
       message: "Error deleting user account.",
     });
+
+// Soft delete user account
+const deleteAccount = async (req, res) => {
+  try {
+    const { userId, password, reason } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) return res.status(400).json({ message: 'Incorrect password' });
+    // Only allow delete if all order due amounts are zero
+    if (user.finance && user.finance.money_left > 0) {
+      return res.status(400).json({ message: 'Cannot delete account with outstanding dues.' });
+    }
+    user.isDeleted = true;
+    user.deletedAt = new Date();
+    user.deletionReason = reason || '';
+    await user.save();
+    return res.status(200).json({ message: 'Account deleted (soft delete). You can recover within 90 days.' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Recover user account
+const recoverAccount = async (req, res) => {
+  try {
+    const { email, password, payFee } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || !user.isDeleted) return res.status(404).json({ message: 'No deleted account found.' });
+    const now = new Date();
+    const deletedAt = user.deletedAt || new Date(0);
+    const diffDays = Math.floor((now - deletedAt) / (1000 * 60 * 60 * 24));
+    if (diffDays > 90) {
+      return res.status(410).json({ message: 'Account permanently deleted.' });
+    }
+    if (diffDays > 45 && !user.recoveryFeePaid) {
+      if (!payFee) {
+        return res.status(402).json({ message: 'Recovery fee required for accounts deleted over 45 days.' });
+      }
+      user.recoveryFeePaid = true;
+    }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) return res.status(400).json({ message: 'Incorrect password' });
+    user.isDeleted = false;
+    user.deletedAt = null;
+    user.deletionReason = '';
+    await user.save();
+    return res.status(200).json({ message: 'Account recovered successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+>>>>>>> faef044f (Initial commit with all microservices files)
   }
 };
 
@@ -825,12 +914,148 @@ const changePassword = async (req, res) => {
     });
   }
 };
+
+
+// Add a contact (email/phone) with OTP verification
+const addContact = async (req, res) => {
+  try {
+    const { userId, type, value } = req.body;
+    if (!['email', 'phone'].includes(type)) return res.status(400).json({ message: 'Invalid contact type' });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.contacts.length >= 3) return res.status(400).json({ message: 'Maximum 3 contacts allowed' });
+    if (user.contacts.some(c => c.value === value)) return res.status(400).json({ message: 'Contact already exists' });
+    // Generate OTP and send (reuse existing OTP logic)
+    const otp = await generateOTP();
+    await OTPModel.updateOne(
+      { 'userDetails.contact': value },
+      { userDetails: { contact: value, userId }, otpCode: otp, otpExpiringtime: new Date(Date.now() + 3 * 60 * 1000) },
+      { upsert: true }
+    );
+    // Send OTP (email or SMS)
+    if (type === 'email') {
+      await sendEmail(value, 'Verify Contact OTP', `Your OTP is: ${otp}`);
+    }
+    // For phone, integrate SMS provider here
+    return res.status(200).json({ message: 'OTP sent to contact', otp });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Verify and add contact after OTP
+const verifyAddContact = async (req, res) => {
+  try {
+    const { userId, type, value, otp } = req.body;
+    const otpDoc = await OTPModel.findOne({ 'userDetails.contact': value });
+    if (!otpDoc || otpDoc.otpCode !== otp) return res.status(400).json({ message: 'Invalid or expired OTP' });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    user.contacts.push({ type, value, isPrimary: user.contacts.length === 0, isVerified: true });
+    await user.save();
+    await OTPModel.deleteOne({ 'userDetails.contact': value });
+    return res.status(200).json({ message: 'Contact added and verified' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Delete a contact (requires password)
+const deleteContact = async (req, res) => {
+  try {
+    const { userId, value, password } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) return res.status(400).json({ message: 'Incorrect password' });
+    user.contacts = user.contacts.filter(c => c.value !== value);
+    await user.save();
+    return res.status(200).json({ message: 'Contact deleted' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Change primary contact
+const changePrimaryContact = async (req, res) => {
+  try {
+    const { userId, value } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    let found = false;
+    user.contacts = user.contacts.map(c => {
+      if (c.value === value) { found = true; return { ...c.toObject(), isPrimary: true }; }
+      return { ...c.toObject(), isPrimary: false };
+    });
+    if (!found) return res.status(400).json({ message: 'Contact not found' });
+    await user.save();
+    return res.status(200).json({ message: 'Primary contact changed' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Verify info for suspended users
+const verifySuspendedInfo = async (req, res) => {
+  try {
+    const { userId, name, profilePhoto, nationality, dateOfBirth, identityNumber, identityDocument } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.status !== 'suspend') return res.status(400).json({ message: 'User is not suspended' });
+    user.name = name;
+    user.profilePhoto = profilePhoto;
+    user.nationality = nationality;
+    user.dateOfBirth = dateOfBirth;
+    user.identityNumber = identityNumber;
+    user.identityDocument = identityDocument;
+    await user.save();
+    return res.status(200).json({ message: 'Suspended info verified and updated' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Enable 2FA (select method: email or phone)
+const enable2FA = async (req, res) => {
+  try {
+    const { userId, method } = req.body;
+    if (!['email', 'phone'].includes(method)) return res.status(400).json({ message: 'Invalid 2FA method' });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    user.twoFaAuthentication = true;
+    user.twoFaMethod = method;
+    await user.save();
+    return res.status(200).json({ message: `2FA enabled with ${method}` });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Disable 2FA
+const disable2FA = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    user.twoFaAuthentication = false;
+    user.twoFaMethod = undefined;
+    await user.save();
+    return res.status(200).json({ message: '2FA disabled' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
 module.exports = {
   createUser,
   verifyRegistrationOTP,
   getUsers,
   loginUser,
   deleteAccount,
+
+  recoverAccount,
+
   profileUpdate,
   profileUpdate,
   requestPasswordReset,
@@ -841,4 +1066,13 @@ module.exports = {
   getUserById,
   getUserInfoByMail,
   accountSecurity,
+
+  addContact,
+  verifyAddContact,
+  deleteContact,
+  changePrimaryContact,
+  verifySuspendedInfo,
+  enable2FA,
+  disable2FA,
+
 };

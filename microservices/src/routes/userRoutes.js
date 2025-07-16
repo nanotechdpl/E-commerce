@@ -55,6 +55,16 @@ const {
   getUserById,
   getUserInfoByMail,
   accountSecurity,
+
+  recoverAccount,
+  addContact,
+  verifyAddContact,
+  deleteContact,
+  changePrimaryContact,
+  verifySuspendedInfo,
+  enable2FA,
+  disable2FA,
+
 } = require("../controllers/userController");
 const { isUser } = require("../middlewares/userAuthenticationMiddleWare");
 
@@ -81,5 +91,16 @@ router.post("/change-password", isUser, changePassword);
 // two factor
 router.get("/verify-user/:email", getUserInfoByMail);
 router.patch("/account-security/:email", accountSecurity);
+
+router.post("/recover-account", recoverAccount);
+
+router.post("/add-contact", isUser, addContact);
+router.post("/verify-add-contact", isUser, verifyAddContact);
+router.post("/delete-contact", isUser, deleteContact);
+router.post("/change-primary-contact", isUser, changePrimaryContact);
+router.post("/verify-suspended-info", isUser, verifySuspendedInfo);
+router.post("/enable-2fa", isUser, enable2FA);
+router.post("/disable-2fa", isUser, disable2FA);
+
 
 module.exports = router;

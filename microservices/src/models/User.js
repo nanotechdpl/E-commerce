@@ -48,6 +48,9 @@ const UserSchema = new mongoose.Schema({
     default: false
   },
 
+  twoFaMethod: { type: String, enum: ['email', 'phone'], default: 'email' },
+
+
     userUID: {
     type: mongoose.Schema.Types.String,
     unique: [true, "userUID is unique."],
@@ -59,7 +62,32 @@ const UserSchema = new mongoose.Schema({
     money_left: { type: Number, default: 0 },
     refund_amount: { type: Number, default: 0 },
     profit: { type: Number, default: 0 },
+
   }
+
+  },
+  recoveryFeePaid: { type: Boolean, default: false },
+  isDeleted: { type: Boolean, default: false },
+  deletedAt: { type: Date },
+  deletionReason: { type: String },
+  contacts: [
+    {
+      type: {
+        type: String,
+        enum: ['email', 'phone'],
+        required: true,
+      },
+      value: { type: String, required: true },
+      isPrimary: { type: Boolean, default: false },
+      isVerified: { type: Boolean, default: false },
+    }
+  ],
+  profilePhoto: { type: String },
+  nationality: { type: String },
+  dateOfBirth: { type: Date },
+  identityNumber: { type: String },
+  identityDocument: { type: String },
+
 },
 {
   timestamps:true

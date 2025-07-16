@@ -24,7 +24,10 @@ const  RealEstateBannerSchema = new mongoose.Schema({
         type:mongoose.SchemaTypes.String
      },
       
-})
+
+
+});
+
 
 const RealEstateBannerModel = mongoose.model('realEstate-banner',RealEstateBannerSchema)
 

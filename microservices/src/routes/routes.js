@@ -79,6 +79,12 @@ const {
 const adminPaymentRefundRouter = require("../features/admin/settings/user/routes/payment_refund");
 const adminOrderRouter = require("../features/admin/settings/user/routes/order");
 
+
+
+const trafficAnalyticsRoutes = require("../features/admin/analytics/traffic.routes");
+const adminNotificationRoutes = require("../features/admin/notifications/adminNotification.routes");
+
+
 router.use("/users", userRoutes);
 router.use("/agency", agencyRoutes);
 router.use("/admins", admins);
@@ -128,6 +134,10 @@ router.use("/admin/security", secirityRoutes);
 
 router.use("/admin/stock-holder", stackHolderRoutes);
 router.use("/admin/subscriber", subscribesRoutes);
+
+router.use("/admin/analytics/traffic", trafficAnalyticsRoutes);
+router.use("/admin/notifications", adminNotificationRoutes);
+
 
 router.use("/messages", messageRoutes);
 router.use("/calls", callRoutes);
