@@ -1,0 +1,28 @@
+.payment-table .ant-table {
+    background: transparent;
+  }
+  
+  .payment-table .ant-table-thead > tr > th {
+    background: #FFB200 !important;
+    
+  }
+  
+  .payment-table .ant-table-tbody > tr > td {
+    background: #FFF8E7;
+    border-right: 1px solid #FFB200;
+  
+  }
+  
+  .payment-table .ant-table-tbody > tr:hover > td {
+    background: #FFF3D4 !important;
+  }
+  
+  .payment-table .ant-pagination {
+    display: none;
+  }
+  
+  .payment-table .ant-table-container {
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+ 
+  }

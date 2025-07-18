@@ -1,0 +1,31 @@
+export interface IAgency {
+  _id: string;
+  fullName: string;
+  nationality: string;
+  nationalIdOrPassport: string;
+  phoneNumber: string;
+  personalEmail: string;
+  permanentAddress: string;
+  personalDocuments: string[];
+  agencyLogo: string;
+  agencyName: string;
+  serviceDivision: string;
+  serviceArea: string;
+  grade: "A" | "B" | "C" | "D" | "E";
+  employees: string[];
+  officeAddress: string;
+  phoneNumberOffice: string;
+  officeEmail: string;
+  agencyDocuments: string[];
+  description: string;
+  currency: string;
+  feeAmount: number;
+  depositAmount: number;
+  userId: string;
+  status: "Pending" | "Active" | "Inactive";
+  socialLinks: { platform: string; link: string }[];
+  createdAt: string;
+  updatedAt: string;
+  agencyId: string;
+  __v: number;
+}

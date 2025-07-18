@@ -9,6 +9,7 @@ const {
 } = require("../controller/user.mgn");
 
 const isAdmin = require('../../../../../middlewares/isAdminMiddleWare');
+const Agency = require('../../../../agency/model/agency.model');
 
 const router = require("express").Router();
 
@@ -38,6 +39,46 @@ router.post(
 router.post(
   "/user/return/dashboard",
   adminretrievealluserrefunddashboardController
+);
+router.post(
+  "/user/analytics",
+  (req, res) => {
+    res.status(200).json({
+      status_code: 200,
+      status: true,
+      message: "User analytics data retrieved successfully.",
+      data: {
+        totaluser: [],
+        totalusers: 1,
+        totalactiveusers: 1,
+        totalblockusers: 0
+      }
+    });
+  }
+);
+router.post(
+  "/user/agency/dashboard",
+  async (req, res) => {
+    try {
+      const agencies = await Agency.find();
+      res.status(200).json({
+        status_code: 200,
+        status: true,
+        message: "User agency dashboard retrieved successfully.",
+        data: {
+          totalAgencies: agencies.length,
+          agencies
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        status_code: 500,
+        status: false,
+        message: "Failed to fetch agencies.",
+        error: error.message
+      });
+    }
+  }
 );
 router.delete(
   "/delete/account",

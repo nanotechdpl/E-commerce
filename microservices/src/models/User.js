@@ -62,9 +62,6 @@ const UserSchema = new mongoose.Schema({
     money_left: { type: Number, default: 0 },
     refund_amount: { type: Number, default: 0 },
     profit: { type: Number, default: 0 },
-
-  }
-
   },
   recoveryFeePaid: { type: Boolean, default: false },
   isDeleted: { type: Boolean, default: false },

@@ -1,0 +1,143 @@
+import { Poppins } from "next/font/google";
+import Link from "next/link";
+import ChatInterface from "../ChatInterface";
+import { OrderData } from "@/types/orderData";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["600"],
+});
+
+const formatToDDMMYYYY = (isoDate: any) => {
+  const date = new Date(isoDate);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const year = date.getUTCFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
+
+
+const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-[#F9C23C]";
+      case "payment":
+        return "bg-[#FFD700]";
+      case "waiting":
+        return "bg-[#F4D03F]";
+      case "working":
+        return "bg-[#5DADE2]";
+      case "stopped":
+        return "bg-[#A569BD]";
+      case "completed":
+        return "bg-[#2ECC71]";
+      case "delivered":
+        return "bg-[#27AE60]";
+      case "refund":
+        return "bg-[#F1948A]";
+      case "cancelled":
+        return "bg-[#E74C3C]";
+      default:
+        return "bg-[#FFB200]";
+    }
+  }
+  return (
+    <table className="w-full overflow-x-scroll rounded-lg border-collapse ">
+      <thead className="bg-[#FFB200] text-sm">
+        <tr>
+          {[
+            "No.",
+            "Order ID",
+            "User / Agency Email",
+            "Project Name",
+            "Total Amount",
+            "Paid Amount",
+            "Due Amount",
+            "Message",
+            // "Delivery Date",
+            "Profits",
+            "Status",
+            "Action",
+          ].map((header, index) => (
+            <th
+              key={index}
+              className={`${poppins.className} px-2 py-4 text-[#231F20] font-semibold`}
+            >
+              {header}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody className="text-center text-black">
+        {orders &&
+          orders?.map((order: OrderData, rowIndex: number) => (
+            <tr
+              key={rowIndex}
+              className={`${
+                rowIndex % 2 === 0 ? "bg-[#FAEFD8]" : "bg-white"
+              }   `}
+            >
+              <td className="py-3 border-r border-r-[#FFB200]">
+                <span
+                  className={`${poppins.className} font-bold text-black text-[9.72px] leading-[22.58px] w-[22.48px] h-[22.28px] bg-[#FFB200] mx-auto block `}
+                >
+                  {rowIndex + 1}
+                </span>
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                {order?.orderId}
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                {order?.email}
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                {order?.serviceName
+}
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                {order?.priceOrBudget || order?.salaryOrBudget} {order?.payCurrency}
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                {order.paid_amount}
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                {order?.budget - order.paid_amount}
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                <ChatInterface />
+              </td>
+              {/* <td className="py-3 border-r border-r-[#FFB200]">
+                {formatToDDMMYYYY(order.project_deadline)}
+              </td> */}
+              <td className="py-3 border-r border-r-[#FFB200]">
+                {order.profit}
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                <span
+                  className={`${
+                    poppins.className
+                  } font-bold text-black w-fit text-[10.22px] py-[2px] px-3 rounded-[5px]  ${getStatusColor(order.orderStatus)}  block mx-auto`}
+                >
+                  {order?.orderStatus}
+                </span>
+              </td>
+              <td className="py-3">
+                <Link
+                  className="rounded-md bg-[#FFB200] px-3 py-1 text-[14px] text-black transition-all hover:bg-black hover:text-white hover:shadow-md"
+                  href={`/c/orders/update?orderId=${order?.orderId}`}
+                >
+                  View
+                </Link>
+              </td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  );
+};
+
+export default OrdersTable;

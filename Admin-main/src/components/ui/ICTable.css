@@ -1,0 +1,36 @@
+.custom-table .ant-table-thead > tr > th {
+    background-color: #FFB200 !important;
+    border: none;
+  }
+.blue-table .ant-table-thead > tr > th {
+    /* background-color: #172554 !important; */
+    background-color: #FFB200 !important;
+    color: black !important;
+    border: none;
+    
+  }
+  .blue-table th {
+    color: black !important; 
+    text-align: center;
+  }
+
+  /* ICTable.css */
+
+.responsive-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.blue-table {
+  font-size: 14px; /* Adjust font size for better readability on small screens */
+}
+
+@media (max-width: 768px) {
+  .blue-table .ant-table {
+    font-size: 12px; /* Smaller font size for smaller devices */
+  }
+  .blue-table .ant-pagination {
+    display: flex;
+    justify-content: center;
+  }
+}

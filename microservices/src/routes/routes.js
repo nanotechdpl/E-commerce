@@ -78,7 +78,7 @@ const {
 //27-03-25:
 const adminPaymentRefundRouter = require("../features/admin/settings/user/routes/payment_refund");
 const adminOrderRouter = require("../features/admin/settings/user/routes/order");
-
+const adminDashboardRouter = require("../features/admin/settings/user/routes/dashboard");
 
 
 const trafficAnalyticsRoutes = require("../features/admin/analytics/traffic.routes");
@@ -150,6 +150,7 @@ router.use("/blog", blogRouter);
 //27-03-25:
 router.use("/admin", adminPaymentRefundRouter);
 router.use("/admin", adminOrderRouter);
+router.use("/admin", adminDashboardRouter);
 
 // 10-06-2025:
 router.use("/pay-order", require("../features/payment/routes"));

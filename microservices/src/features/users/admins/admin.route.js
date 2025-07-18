@@ -5,11 +5,12 @@ const isAdmin = require("../../../middlewares/isAdminMiddleWare");
 
 const router = express.Router();
 
-router.get("/", adminController.getAll);
-
-router.post("/sub-user-check", adminController.isSubAdminCodeValid);
-
-router.get("/sub-admin", adminController.getSubAdmin);
+router.get("/debug", (req, res) => {
+  res.json({ message: "GET /admins/debug reached" });
+});
+router.post("/debug", (req, res) => {
+  res.json({ message: "POST /admins/debug reached", body: req.body });
+});
 
 router.get("/:id", adminController.get);
 

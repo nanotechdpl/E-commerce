@@ -145,15 +145,14 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-
-    const { name, currency, email, password } = req.body;
+    const { name, currency, email, phone, password } = req.body;
 
     // Check if the user has provided all the required fields
-    if (!name || !currency || !email || !password) {
+    if (!name || !currency || !(email || phone) || !password) {
       return res.status(400).json({
         title: "Registration error",
         status: 400,
-        message: "Please fill out all fields",
+        message: "Please fill out all fields (name, currency, email or phone, password)",
       });
     }
 
@@ -169,8 +168,7 @@ const createUser = async (req, res) => {
     // const allUsers = await User.find();
     // console.log("allUsers:", allUsers);
     const existingUser = await User.findOne({ email });
-    const existingAgency = await Agency.findOne({ email });
-    // const existingAgency = await Agency.findOne({ email });
+    const existingAgency = email ? await Agency.findOne({ email }) : null;
 
     if (existingUser) {
       return res.status(400).json({
@@ -178,17 +176,6 @@ const createUser = async (req, res) => {
         status: 400,
         error: "User already exists",
         exist: true,
-      });
-    }
-
-    const { name, currency, email, phone, password } = req.body;
-
-    // Check if the user has provided all the required fields
-    if (!name || !currency || !(email || phone) || !password) {
-      return res.status(400).json({
-        title: "Registration error",
-        status: 400,
-        message: "Please fill out all fields (name, currency, email or phone, password)",
       });
     }
 
@@ -205,8 +192,6 @@ const createUser = async (req, res) => {
     }
 
     // Check if the user already exists as an agency
-    const existingAgency = email ? await Agency.findOne({ email }) : null;
->>>>>>> faef044f (Initial commit with all microservices files)
     if (existingAgency) {
       return res.status(400).json({
         title: "Agency Creation error",
@@ -226,13 +211,6 @@ const createUser = async (req, res) => {
     // Generate OTP
     const otp = await generateOTP();
     // console.log('Otp:', otp)
-
-        error: "This User already exists as Agency",
-      });
-    }
-
-    // Generate OTP
-    const otp = await generateOTP();
 
     const templatePath = "user.registration.ejs";
     await OTPModel.updateOne(
@@ -561,26 +539,6 @@ const deleteAccount = async (req, res) => {
       successful: false,
       message: "Error deleting user account.",
     });
-
-// Soft delete user account
-const deleteAccount = async (req, res) => {
-  try {
-    const { userId, password, reason } = req.body;
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) return res.status(400).json({ message: 'Incorrect password' });
-    // Only allow delete if all order due amounts are zero
-    if (user.finance && user.finance.money_left > 0) {
-      return res.status(400).json({ message: 'Cannot delete account with outstanding dues.' });
-    }
-    user.isDeleted = true;
-    user.deletedAt = new Date();
-    user.deletionReason = reason || '';
-    await user.save();
-    return res.status(200).json({ message: 'Account deleted (soft delete). You can recover within 90 days.' });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -611,7 +569,6 @@ const recoverAccount = async (req, res) => {
     return res.status(200).json({ message: 'Account recovered successfully.' });
   } catch (error) {
     return res.status(500).json({ message: error.message });
->>>>>>> faef044f (Initial commit with all microservices files)
   }
 };
 

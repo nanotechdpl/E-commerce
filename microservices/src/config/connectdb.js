@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
-const url = "mongodb://localhost:27017/eccommerce";
-//let LOCAL_DB_URL = "mongodb://localhost:27017/factoryapp"
+// Use localhost for local development, Docker service name for containerized environment
+const url = process.env.NODE_ENV === 'production' 
+  ? "mongodb://chat_user:chat_pass@mongodb:27017/eccommerce?authSource=admin"
+  : "mongodb://chat_user:chat_pass@localhost:27017/eccommerce?authSource=admin";
 
 const connectDB = async () => {
   try {
