@@ -4,7 +4,7 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const { connectDB } = require('./config/database');
-const fileRoutes = require('./routes/file.routes');
+const fileRoutes = require('./routes/fileRoutes');
 const errorHandler = require('../../../shared/middleware/errorHandler');
 
 const app = express();
@@ -20,6 +20,7 @@ connectDB();
 
 // Routes
 app.use('/api/files', fileRoutes);
+app.use('/api/v1/file-upload', fileRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

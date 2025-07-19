@@ -99,7 +99,7 @@ const usersslice = createSlice({
     },
     fetchedUsersData(state, action: PayloadAction<any>) {
       state.isLoading = false;
-      state.users = action.payload?.data;
+      state.users = action.payload?.data?.totaluser || [];
     },
 
     UsersFetchingFailed(state, action: PayloadAction<any>) {
@@ -125,7 +125,7 @@ const usersslice = createSlice({
     },
     fetchedUserAnalytics(state, action: PayloadAction<any>) {
       state.isLoading = false;
-      state.userAnalytics = action.payload?.data;
+      state.userAnalytics = action.payload?.data || [];
     },
 
     UserAnalyticsFetchinFailed(state, action: PayloadAction<any>) {

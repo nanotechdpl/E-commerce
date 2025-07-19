@@ -69,7 +69,7 @@ export const getAllPaymentIcons = () => {
   return async (dispatch: Dispatch) => {
     dispatch(fetching());
     try {
-      const res = await axiosInstance.get(`/api/v1/admin/payment-icon`);
+      const res = await axiosInstance.get(`/admin/payment-icon`);
       console.log(res);
       if (res.status === 200) {
         dispatch(fetchedSocialIcosData({ data: res?.data?.data }));

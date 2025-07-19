@@ -3,7 +3,7 @@ import { env } from "../../config/env";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-    baseURL: `${env.NEXT_PUBLIC_API_URL}`, // Change as needed
+    baseURL: "http://localhost:7000/api/v1", // Hardcoded to ensure correct port
     timeout: 10000, // Set timeout (optional)
     headers: {
         "Content-Type": "application/json",

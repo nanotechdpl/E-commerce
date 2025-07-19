@@ -17,10 +17,10 @@ const adminretrievealluserdashboardModel = async (data, res) => {
 
     const totalusers = await userModel.countDocuments();
     const totalactiveusers = await userModel.countDocuments({
-      user_blocked: false,
+      status: "active",
     });
     const totalblockusers = await userModel.countDocuments({
-      user_blocked: true,
+      status: "block",
     });
     const dashboard = {
       totaluser,

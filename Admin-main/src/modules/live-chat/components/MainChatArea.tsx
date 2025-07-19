@@ -6,17 +6,18 @@ import { useSelector } from "react-redux";
 import { ChatAction } from "./actions/ChatAction";
 import { CallAction } from "./actions/CallAction";
 import { RootState } from "@/redux/store/store";
-import { TMessage } from "../types";
+import { TMessage, TBackendMessage } from "../types";
 
-const SOCKET_URL =
-  process.env.NEXT_PUBLIC_CHAT_API_URL || "http://localhost:8000";
+const SOCKET_URL = "http://localhost:7000";
 
 export const MainChatArea = () => {
   const { selectedUser } = useChatContext();
   console.log("🚀 ~ MainChatArea ~ selectedUser:", selectedUser);
   const authStore = useSelector((state: RootState) => state.auth.user);
-  // const userId = authStore?.id;
-  const [userId, setUserId] = useState("");
+  console.log("🚀 ~ MainChatArea ~ authStore:", authStore);
+  
+  // Try to get userId from multiple sources
+  const userId = authStore?.id || localStorage.getItem("userId") || "";
   console.log("🚀 ~ MainChatArea ~ userId:", userId);
 
   const [page, setPage] = useState(1);
@@ -36,22 +37,45 @@ export const MainChatArea = () => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    if (selectedUser?.receiverId) {
-      setUserId(selectedUser?.receiverId);
-    }
-  }, [selectedUser?.receiverId]);
+
 
   const fetchMessage = useCallback(async () => {
-    if (!userId && !selectedUser?.senderId && !selectedUser?.conversationId)
+    if (!userId || !selectedUser?.senderId) {
+      console.log("Missing userId or selectedUser.senderId:", { userId, senderId: selectedUser?.senderId });
       return;
+    }
+    
+    // Additional check to ensure userId is not empty string
+    if (userId.trim() === "") {
+      console.log("userId is empty string, skipping API call");
+      return;
+    }
     try {
       const response = await fetch(
-        `${SOCKET_URL}/api/messages/admin-conversation?conversationId=${selectedUser?.conversationId}&senderId=${userId}&serviceType=${selectedUser?.serviceType}&receiverId=${selectedUser?.senderId}`
+        `${SOCKET_URL}/api/v1/messages/get?sender=${userId}&receiver=${selectedUser.senderId}`
       );
       const data = await response.json();
-
-      setMessages(data);
+      console.log("Messages response:", data);
+      
+      // The backend returns { success: true, messages: [...] }
+      // We need to extract the messages array and transform the data structure
+      const backendMessages: TBackendMessage[] = data.messages || [];
+      
+      // Transform backend message format to frontend format
+      const transformedMessages: TMessage[] = backendMessages.map((msg: TBackendMessage) => ({
+        senderId: msg.sender || msg.visitorId || 'unknown',
+        senderName: msg.sender ? 'User' : 'Visitor', // We'll need to fetch actual user names
+        receiverId: msg.receiver,
+        receiverName: 'Admin', // We'll need to fetch actual receiver names
+        content: msg.message,
+        conversationId: `conv_${msg.sender || msg.visitorId}_${msg.receiver}`,
+        serviceType: 'live-chat',
+        file: msg.file ? { document: msg.file } : undefined,
+        createdAt: msg.createdAt,
+        updatedAt: msg.createdAt
+      }));
+      
+      setMessages(transformedMessages);
     } catch (error) {
       console.error("Error fetching messages:", (error as Error).message);
     }
@@ -82,12 +106,12 @@ export const MainChatArea = () => {
     };
   }, [userId]);
 
-  const sendMessage = (e: React.FormEvent) => {
+  const sendMessage = async (e: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!input.trim() || !selectedUser) return;
 
     const msg: TMessage = {
-      senderId: selectedUser.receiverId!,
+      senderId: userId,
       receiverId: selectedUser.senderId!,
       content: input,
       createdAt: new Date(),
@@ -97,9 +121,31 @@ export const MainChatArea = () => {
     };
     console.log("🚀 ~ sendMessage ~ msg:", msg);
 
-    socket.current?.emit("private_message", msg);
-    setMessages((prev) => [...prev, msg]);
-    setInput("");
+    try {
+      // Send message to backend API
+      const response = await fetch(`${SOCKET_URL}/api/v1/messages/send/user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: userId,
+          receiver: selectedUser.senderId,
+          message: input
+        }),
+      });
+
+      if (response.ok) {
+        // Also emit via socket for real-time updates
+        socket.current?.emit("private_message", msg);
+        setMessages((prev) => [...prev, msg]);
+        setInput("");
+      } else {
+        console.error("Failed to send message to backend");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   const formatTime = (timestamp: Date) => {

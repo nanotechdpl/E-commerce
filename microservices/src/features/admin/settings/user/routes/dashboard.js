@@ -42,19 +42,7 @@ router.post(
 );
 router.post(
   "/user/analytics",
-  (req, res) => {
-    res.status(200).json({
-      status_code: 200,
-      status: true,
-      message: "User analytics data retrieved successfully.",
-      data: {
-        totaluser: [],
-        totalusers: 1,
-        totalactiveusers: 1,
-        totalblockusers: 0
-      }
-    });
-  }
+  adminretrievealluserdashboardController
 );
 router.post(
   "/user/agency/dashboard",

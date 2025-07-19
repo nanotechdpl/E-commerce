@@ -9,6 +9,17 @@ export type TConversation = {
   updatedAt?: Date;
 };
 
+export type TUser = {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  status: string;
+  role: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
 type IFile = {
   image?: string;
   video?: string;
@@ -27,6 +38,19 @@ export type TMessage = {
   file?: IFile;
   createdAt?: Date;
   updatedAt?: Date;
+};
+
+export type TBackendMessage = {
+  _id: string;
+  sender: string | null;
+  visitorId: string | null;
+  receiver: string;
+  message: string;
+  file?: string;
+  isSeen: boolean;
+  deletedByUser: boolean;
+  deletedByAdmin: boolean;
+  createdAt: Date;
 };
 
 export type State = {

@@ -16,6 +16,6 @@ export const env = createEnv({
   // Map the schema to actual runtime environment variables
   runtimeEnv: {
     NEXT_PUBLIC_API_URL:
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000",
+      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:7000",
   },
 });

@@ -182,7 +182,7 @@ const CreateOrder = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/api/v1/factory-app/order/all");
+        const response = await axiosInstance.get("/factory-app/order/all");
         const mappedData = response.data.data.map((item: any) => ({
           _id: item._id,
           photo: item.photo,

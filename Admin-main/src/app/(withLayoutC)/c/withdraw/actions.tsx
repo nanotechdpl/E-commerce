@@ -15,7 +15,7 @@ interface PaymentParams {
 export const getAllReturns = (reqBody: PaymentParams) => {
     return async (dispatch: Dispatch) => {
         dispatch(fetchingAllReturns())
-        fetch(`${env.NEXT_PUBLIC_API_URL}/api/v1/factory-app/admin/return/dashboard`, {
+        fetch(`${env.NEXT_PUBLIC_API_URL}/api/v1/admin/user/return/dashboard`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -37,7 +37,7 @@ export const getAllReturns = (reqBody: PaymentParams) => {
 export const getSingleReturn = (id: string) => {
     return async (dispatch: Dispatch) => {
         dispatch(fetchingSingleReturn())
-        fetch(`${env.NEXT_PUBLIC_API_URL}/api/v1/factory-app/admin/single/return`, {
+        fetch(`${env.NEXT_PUBLIC_API_URL}/api/v1/admin/user/return/single`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -30,7 +30,7 @@ export const getAllAdminUsers = () => {
     dispatch(fetchingUsersData());
 
     try {
-      const res = await axiosInstance.post(`/api/v1/admin/all/user/dashboard`);
+      const res = await axiosInstance.post(`/admin/all/user/dashboard`);
       dispatch(fetchedUsersData({ data: res?.data?.data }));
     } catch (error: any) {
       console.log(error);
@@ -44,7 +44,7 @@ export const getSingleUser = (id: string) => {
     dispatch(fetchingSingleUserData());
     try {
       const res = await axiosInstance.get(
-        `/api/v1/factory-app/user-admin/${id}`
+        `/factory-app/user-admin/${id}`
       );
       console.log(id, res.data);
       dispatch(fetchedSingleUserData({ data: res?.data?.data }));
@@ -60,7 +60,7 @@ export const getAllUser = (query: string = "") => {
     dispatch(fetchingAllUsers());
 
     try {
-      const res = await axiosInstance.post(`/api/v1/admin/all/user/dashboard`);
+      const res = await axiosInstance.post(`/admin/all/user/dashboard`);
       const result = res.data;
 
       if (
@@ -83,7 +83,7 @@ export const getUserAnalytics = () => {
 
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/analytics`
+        `/admin/user/analytics`
       );
       console.log(res.data);
       dispatch(fetchedUserAnalytics({ data: res?.data?.data }));
@@ -118,7 +118,7 @@ export const toggleUser = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `api/v1/factory-app/user-admin/block/${id}`
+        `factory-app/user-admin/block/${id}`
       );
       console.log(res.data);
     } catch (error: any) {
@@ -132,7 +132,7 @@ export const deleteUser = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `api/v1/factory-app/user-admin/delete/${id}`
+        `factory-app/user-admin/delete/${id}`
       );
       console.log(res.data);
     } catch (error: any) {
@@ -147,7 +147,7 @@ export const suspendUser = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `api/v1/factory-app/user-admin/suspend/${id}`
+        `factory-app/user-admin/suspend/${id}`
       );
       console.log(res.data);
     } catch (error: any) {
@@ -161,7 +161,7 @@ export const getUserOrdersById = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `api/v1/factory-app/admin/user/order/dashboard`,
+        `factory-app/admin/user/order/dashboard`,
         { userid: id }
       );
       console.log(res.data.data);
@@ -178,7 +178,7 @@ export const getUserPaymentsById = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/payment/dashboard`,
+        `/admin/user/payment/dashboard`,
         { userid: id }
       );
       console.log(res.data);

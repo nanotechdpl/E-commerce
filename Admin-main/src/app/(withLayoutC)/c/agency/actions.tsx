@@ -21,7 +21,7 @@ export const getAllAgencies = () => {
     dispatch(fetchingAllAgenies());
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/agency/dashboard`
+        `/admin/user/agency/dashboard`
       );
       const agencies = res?.data?.data?.agencies || [];
       dispatch(fetchedAllAgenies(agencies));
@@ -37,7 +37,7 @@ export const getAgencyAnalytics = () => {
     dispatch(fetchingAgencyAnalytics());
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/agency/dashboard`
+        `/admin/user/agency/dashboard`
       );
       const analytics = res?.data?.data?.analytics || [];
       dispatch(fetchedAgencyAnalytics(analytics));
@@ -52,7 +52,7 @@ export const getSingleAgency = (id: string) => {
     dispatch(fetchingSingleAgency());
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/agency/single/${id}`
+        `/admin/user/agency/single/${id}`
       );
       const agency = res?.data?.data || null;
       dispatch(fetchedSingleAgency(agency));

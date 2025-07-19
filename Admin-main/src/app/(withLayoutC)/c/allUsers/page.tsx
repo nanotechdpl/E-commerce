@@ -20,18 +20,16 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import { IUser } from "@/types/user";
 
 interface UserAnalytics {
-  newUsers: number;
-  totalUsers: number;
-  totalActiveUsers: number;
-  totalSuspendedUsers: number;
-  totalPendingDeleteUsers: number;
-  totalDeletedUsers: number;
+  totaluser: any[];
+  totalusers: number;
+  totalactiveusers: number;
+  totalblockusers: number;
 }
 
 const AllUsers: React.FC = () => {
   const users = useSelector((state: RootState) => state.users?.users);
   const userAnalytics = useSelector<RootState, UserAnalytics | undefined>(
-    (state: RootState) => state.users?.userAnalytics as unknown as UserAnalytics
+    (state: RootState) => state.users?.userAnalytics as UserAnalytics
   );
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(10);
@@ -55,23 +53,23 @@ const AllUsers: React.FC = () => {
     ? [
         {
           title: "Total Active User",
-          value: userAnalytics?.totalActiveUsers || 0,
+          value: userAnalytics?.totalactiveusers || 0,
         },
         {
           title: "Total Suspend User",
-          value: userAnalytics?.totalSuspendedUsers || 0,
+          value: userAnalytics?.totalusers - (userAnalytics?.totalactiveusers || 0) || 0,
         },
         {
           title: "Total Block User",
-          value: userAnalytics?.totalPendingDeleteUsers || 0,
+          value: userAnalytics?.totalblockusers || 0,
         },
         {
           title: "Total Dormant User",
-          value: userAnalytics?.totalDeletedUsers || 0,
+          value: 0,
         },
         {
           title: "Total Closed User",
-          value: userAnalytics?.totalDeletedUsers || 0,
+          value: 0,
         },
       ]
     : [];

@@ -1,5 +1,5 @@
 module.exports = {
-    callRoutes: require("../livechat/routes/call.routes"),
-    messageRoutes: require("../livechat/routes/message.route"),
+    callRoutes: require("./routes/call.routes"),
+    messageRoutes: require("./routes/message.route"),
   };
   

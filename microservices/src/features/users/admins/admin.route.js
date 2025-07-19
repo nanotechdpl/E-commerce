@@ -12,6 +12,9 @@ router.post("/debug", (req, res) => {
   res.json({ message: "POST /admins/debug reached", body: req.body });
 });
 
+// Get all admins
+router.get("/", adminController.getAll);
+
 router.get("/:id", adminController.get);
 
 router.post("/", adminController.create);

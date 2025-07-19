@@ -3,7 +3,7 @@
 import { Circle, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useChatContext } from "../hooks/useChatContext";
-import type { TConversation } from "../types";
+import type { TConversation, TUser } from "../types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
 
@@ -25,7 +25,7 @@ export const OnlineUser = () => {
   // const {state} = useContext(ChatContext)
   const authStore = useSelector((state: RootState) => state.auth.user);
   const loggedUserId = authStore?.id;
-  const [onlineUsers, setOnlineUsers] = useState<TConversation[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<TUser[]>([]);
   const [query, setQuery] = useState<string>("");
   const [isSearchSelected, setIsSearchSelected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,13 +36,15 @@ export const OnlineUser = () => {
     try {
       setIsLoading(true);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_CHAT_API_URL}/api/users/user-conversation-request`
+        `http://localhost:7000/api/v1/users`
       );
       // `http://localhost:8000/api/users?query=${search}&loggedUserId=${loggedUserId}`
       setIsLoading(false);
       const data = await res.json();
       console.log(data);
-      setOnlineUsers(data);
+      // The backend returns { users: [...], message: "...", status: 200 }
+      // We need to extract the users array
+      setOnlineUsers(data.users || []);
     } catch (error) {
       setIsLoading(false);
       console.error("Failed to fetch users:", error);
@@ -61,11 +63,22 @@ export const OnlineUser = () => {
     }
   }, [debouncedQuery, fetchOnlineUsers, isSearchSelected]);
 
-  const handleClick = (isUser: TConversation | null) => {
+  const handleClick = (isUser: TUser | null) => {
     if (!isUser) return;
-    updateReceiverId(isUser.senderId);
+    // For now, we'll use the user's _id as the receiverId
+    // This is a temporary fix since the live chat functionality is incomplete
+    updateReceiverId(isUser._id);
     updateIsChatSelect(true);
-    updateSelectedUser(isUser);
+    // Convert TUser to TConversation format for the chat context
+    const conversationUser: TConversation = {
+      senderId: isUser._id,
+      senderName: isUser.name,
+      serviceType: isUser.role,
+      conversationId: `conv_${isUser._id}`,
+      createdAt: isUser.createdAt,
+      updatedAt: isUser.updatedAt
+    };
+    updateSelectedUser(conversationUser);
   };
 
   return (
@@ -113,31 +126,30 @@ export const OnlineUser = () => {
         {onlineUsers.map((user) => (
           <div
             onClick={() => handleClick(user)}
-            key={user?.conversationId}
+            key={user?._id}
             className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
           >
             <div className="relative">
               <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                {user?.senderName?.charAt(0)?.toUpperCase() || "U"}
+                {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </div>
               <Circle className="absolute -bottom-0.5 -right-0.5 w-3 h-3 text-green-500 fill-current" />
             </div>
             <div className="flex flex-col gap-1">
               <h4 className="text-sm font-medium text-gray-700">
-                {user?.senderName || "Unknown"}
+                {user?.name || "Unknown"}
               </h4>
               <h4 className="text-xs flex gap-5 justify-between items-center">
                 <span className="text-blue-600 font-medium">
-                  {" "}
-                  {user?.serviceType}
+                  {user?.email || "No email"}
                 </span>
                 <span className="text-gray-500">
-                  {new Date(user?.createdAt as Date)?.toLocaleTimeString(
+                  {user?.createdAt ? new Date(user.createdAt).toLocaleTimeString(
                     "en-us",
                     {
                       hourCycle: "h12",
                     }
-                  )}
+                  ) : "Unknown time"}
                 </span>
               </h4>
             </div>

@@ -212,6 +212,40 @@ services:
       - name: file-routes
         paths:
           - /api/files
+          - /api/v1/file-upload/upload
+
+  - name: main-backend
+    url: http://main-backend:7000
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 200
+      - name: cors
+        config:
+          origins:
+            - http://localhost:3000
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - PATCH
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+            - Origin
+            - X-Requested-With
+          credentials: true
+          max_age: 3600
+    routes:
+      - name: menu-services-routes
+        paths:
+          - /api/v1/menu-services
+          - /api/v1/menu-services/
+          - /api/v1/menu-services/(.*)
+        strip_path: false
 
   - name: admin-backend
     url: http://host.docker.internal:7000

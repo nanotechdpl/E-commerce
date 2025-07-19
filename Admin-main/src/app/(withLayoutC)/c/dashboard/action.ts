@@ -17,7 +17,7 @@ export const getAdminOrdersData = () => {
   return async (dispatch: Dispatch) => {
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/order/dashboard`
+        `/admin/user/order/dashboard`
       );
       //   console.log(res.data);
       dispatch(fetchedDashboardOrders({ data: res?.data?.data }));
@@ -32,7 +32,7 @@ export const getAdminDashboadUsersData = () => {
   return async (dispatch: Dispatch) => {
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/all/user/dashboard`
+        `/admin/all/user/dashboard`
       );
       //   console.log(res.data);
       dispatch(fetchedDashboardUsers({ data: res?.data?.data }));
@@ -47,7 +47,7 @@ export const getAdminDashboadPaymentsData = () => {
   return async (dispatch: Dispatch) => {
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/payment/dashboard`
+        `/admin/user/payment/dashboard`
       );
 
       dispatch(fetchedDashboardPayments({ data: res?.data?.data }));
@@ -62,7 +62,7 @@ export const getAdminDashboadRetrunsData = () => {
   return async (dispatch: Dispatch) => {
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/return/dashboard`
+        `/admin/user/return/dashboard`
       );
       console.log(res.data);
       dispatch(fetchedDashboardReturns({ data: res?.data?.data }));
@@ -77,7 +77,7 @@ export const getAdminDashboadAgenciesData = () => {
   return async (dispatch: Dispatch) => {
     try {
       const res = await axiosInstance.post(
-        `/api/v1/admin/user/agency/dashboard`
+        `/admin/user/agency/dashboard`
       );
       console.log("res:  ", res.data);
       dispatch(fetchedDashboardAgencies({ data: res?.data?.data }));

@@ -24,7 +24,7 @@ const adminretrievealluserdashboardController = async (req, res, next) => {
 
 
     if (status != null) {
-      query.$and.push({ user_blocked: status });
+      query.$and.push({ status: status });
     }
     if (startdate) {
       query.$and.push({ createdAt: { $gte: startdate } });
