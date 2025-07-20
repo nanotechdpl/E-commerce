@@ -59,8 +59,8 @@ const UpdatePageHeader = ({
             </div>
           )}
         </div>
-        <select className="bg-transparent border-2 text-black px-4 py-2 rounded-lg">
-          <option value="" disabled selected>
+        <select className="bg-transparent border-2 text-black px-4 py-2 rounded-lg" defaultValue="">
+          <option value="" disabled>
             Status
           </option>
           <option value="Pending">Pending</option>

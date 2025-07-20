@@ -55,7 +55,7 @@ export const getSingleOrder = (id: string) => {
 
     try {
       const res = await axiosInstance.post(
-        `/factory-app/admin/single/order`,
+        `/admin/single/order`,
         { orderid: id }
       );
       console.log(res?.data);

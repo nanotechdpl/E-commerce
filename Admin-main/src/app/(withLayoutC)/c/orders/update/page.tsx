@@ -105,7 +105,7 @@ export default function PendingPage() {
 
   const handleSave = () => {
     axiosInstance
-      .post("/api/v1/factory-app/admin/update/order/status", {
+      .post("/admin/update/order/status", {
         orderid: orderId,
         status: "payment",
         pin: "123456",

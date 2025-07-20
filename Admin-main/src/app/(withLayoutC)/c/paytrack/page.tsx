@@ -59,8 +59,9 @@ const demoPayments: Payment[] = [
 ];
 
 export const PayTrackTable: React.FC = () => {
+  const dispatch = useDispatch();
+  const paymentTracker = useSelector((state: RootState) => state.payment.paymentTracker);
   const [searchTerm, setSearchTerm] = useState("");
-  // const dispatch = useDispatch();
   // const [status] = useState("");
   const [startdate, setStartdate] = useState("");
   const [enddate, setEnddate] = useState("");
@@ -68,9 +69,20 @@ export const PayTrackTable: React.FC = () => {
   // const [bankid] = useState("");
   const [paymentType, setPaymentType] = useState("");
 
-  // For demo, we'll use the demo data instead of Redux state
-  const filteredData = demoPayments.filter((item) => 
-    item.currency.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    // Fetch real payment tracker data on mount
+    dispatch(getPaymentTracker({
+      status: "",
+      startdate: startdate || undefined,
+      enddate: enddate || undefined,
+      viewperpage: 100, // or any default
+      bankid: "",
+      payment_type: paymentType || undefined,
+    }));
+  }, [dispatch, startdate, enddate, paymentType]);
+
+  const filteredData = (Array.isArray(paymentTracker) ? paymentTracker : []).filter((item) =>
+    item.currency?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const onStartDate = (value: Date) => {

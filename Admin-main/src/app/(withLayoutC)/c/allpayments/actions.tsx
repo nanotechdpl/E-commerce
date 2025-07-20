@@ -18,10 +18,10 @@ export const getAllPayments = (userId: string) => {
         `/admin/user/payment/dashboard`
       );
       // console.log(res?.data);
-      dispatch(fetchedAllPayments({ data: res?.data?.data }));
+      dispatch(fetchedAllPayments(res?.data?.data));
     } catch (error: any) {
       console.log(error);
-      dispatch(AllPaymentsFetchingFailed({ data: error?.message }));
+      dispatch(AllPaymentsFetchingFailed({ error: error?.message }));
     }
   };
 };
@@ -32,21 +32,21 @@ export const getSinglePayment = (id: string) => {
 
     try {
       const res = await axiosInstance.post(
-        `/factory-app/admin/single/payment`,
+        `/admin/single/payment`,
         { paymentid: id }
       );
       // console.log(res?.data);
-      dispatch(fetchedSinglePayment({ data: res?.data?.data }));
+      dispatch(fetchedSinglePayment(res?.data?.data));
     } catch (error: any) {
       console.log(error);
-      dispatch(singlePaymentsFetchingFailed({ errro: error?.message }));
+      dispatch(singlePaymentsFetchingFailed({ error: error?.message }));
     }
   };
 };
 export const updateSinglePayment = async (id: string, status: string) => {
   try {
     const res = await axiosInstance.post(
-      `/factory-app/admin/update/payment/status`,
+      `/admin/update/payment/status`,
       { paymentid: id, status: status }
     );
     console.log(res);

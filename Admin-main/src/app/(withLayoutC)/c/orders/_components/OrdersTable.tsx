@@ -105,7 +105,7 @@ const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
                 {order.paid_amount}
               </td>
               <td className="py-3 border-r border-r-[#FFB200]">
-                {order?.budget - order.paid_amount}
+                {((order?.priceOrBudget || order?.salaryOrBudget || 0) - (order.paid_amount || 0)).toFixed(2)}
               </td>
               <td className="py-3 border-r border-r-[#FFB200]">
                 <ChatInterface />
@@ -114,7 +114,7 @@ const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
                 {formatToDDMMYYYY(order.project_deadline)}
               </td> */}
               <td className="py-3 border-r border-r-[#FFB200]">
-                {order.profit}
+                {order.profit || 0}
               </td>
               <td className="py-3 border-r border-r-[#FFB200]">
                 <span

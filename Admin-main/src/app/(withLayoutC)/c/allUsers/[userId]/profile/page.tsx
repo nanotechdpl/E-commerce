@@ -105,7 +105,7 @@ export const Page: NextPage<PagePropsTypes> = (props) => {
                 {user?.name || "N/A"}
               </span>
               <span className="font-inter font-medium text-[29px] leading-[29px] text-[#373535] text-left">
-                {user?.phoneNumber || "N/A"}
+                {user?.phone || "N/A"}
               </span>
               <span className="font-inter font-medium text-[29px] leading-[29px] text-[#373535] text-left">
                 {user?.email || "N/A"}

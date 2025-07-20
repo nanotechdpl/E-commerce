@@ -105,8 +105,13 @@ const AllUsers = () => {
           <Date onStartDate={undefined} onEndDate={undefined} />
 
           <div className="rounded-t-lg overflow-x-auto mt-6">
-            {/* <AgencyTable agencies={agencies && agencies} poppins={poppins} /> */}
-            <AgencyTable agencies={agencies} poppins={poppins} />
+            {agencies && agencies.length > 0 ? (
+              <AgencyTable agencies={agencies} poppins={poppins} />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No agencies found</p>
+              </div>
+            )}
           </div>
 
           {error && <p className="text-red-600">Error: {error}</p>}

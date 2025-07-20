@@ -42,15 +42,25 @@ export const getAllPayments = (userId: string) => {
 
       const result = await response.json();
       if (result.status === 200 || result.status_code === 200 || result?.success) {
-        dispatch(fetchedAllPayments({ data: result?.data }));
+        dispatch(fetchedAllPayments(result?.data));
       } else {
         throw new Error(result.message || "Failed to fetch payments.");
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(AllPaymentsFetchingFailed({ error: err.message }));
     }
   };
 };
+
+function buildApiUrl(path: string) {
+  // Avoid double /api/v1 in the URL
+  const base = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+  if (base.endsWith("/api/v1")) {
+    return `${base}${path}`;
+  } else {
+    return `${base}/api/v1${path}`;
+  }
+}
 
 export const getPaymentTracker = (track: Tracker) => {
   return async (dispatch: Dispatch) => {
@@ -58,8 +68,9 @@ export const getPaymentTracker = (track: Tracker) => {
     const token = getAuthToken();
 
     try {
+      console.log('API URL used for payment tracker:', buildApiUrl("/factory-app/admin/payment-tracker"));
       const response = await fetch(
-        `${env.NEXT_PUBLIC_API_URL}/api/v1/factory-app/admin/payment-tracker`,
+        buildApiUrl("/factory-app/admin/payment-tracker"),
         {
           method: "POST",
           headers: {
@@ -74,11 +85,11 @@ export const getPaymentTracker = (track: Tracker) => {
 
       const result = await response.json();
       if (result.status === 200 || result.status_code === 200 || result?.success) {
-        dispatch(fetchedPaymentTracker({ data: result?.data }));
+        dispatch(fetchedPaymentTracker(result?.data));
       } else {
         throw new Error(result.message || "Failed to fetch payment tracker.");
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(PaymentTrackerFetchingFailed({ error: err.message }));
     }
   };

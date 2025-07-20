@@ -43,8 +43,9 @@ export const getSingleUser = (id: string) => {
   return async (dispatch: Dispatch) => {
     dispatch(fetchingSingleUserData());
     try {
-      const res = await axiosInstance.get(
-        `/factory-app/user-admin/${id}`
+      const res = await axiosInstance.post(
+        `/admin/single/user/dashboard`,
+        { userid: id }
       );
       console.log(id, res.data);
       dispatch(fetchedSingleUserData({ data: res?.data?.data }));
@@ -118,7 +119,8 @@ export const toggleUser = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `factory-app/user-admin/block/${id}`
+        `/admin/update/user/status`,
+        { userid: id, status: "block" }
       );
       console.log(res.data);
     } catch (error: any) {
@@ -131,8 +133,9 @@ export const deleteUser = (id: string) => {
   return async (dispatch: Dispatch) => {
     dispatch(fetchingUsersData());
     try {
-      const res = await axiosInstance.post(
-        `factory-app/user-admin/delete/${id}`
+      const res = await axiosInstance.delete(
+        `/admin/delete/account`,
+        { data: { userid: id } }
       );
       console.log(res.data);
     } catch (error: any) {
@@ -147,7 +150,8 @@ export const suspendUser = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `factory-app/user-admin/suspend/${id}`
+        `/admin/update/user/status`,
+        { userid: id, status: "suspend" }
       );
       console.log(res.data);
     } catch (error: any) {
@@ -161,7 +165,7 @@ export const getUserOrdersById = (id: string) => {
     dispatch(fetchingUsersData());
     try {
       const res = await axiosInstance.post(
-        `factory-app/admin/user/order/dashboard`,
+        `/admin/user/order/dashboard`,
         { userid: id }
       );
       console.log(res.data.data);

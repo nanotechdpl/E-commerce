@@ -25,7 +25,7 @@ function ForgotPasswordForm() {
         try {
           localStorage.setItem("email", values.email);
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/factory-app/auth-admin/forgot-password`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/forgot-password-request`,
             {
               method: "POST",
               body: JSON.stringify(values),

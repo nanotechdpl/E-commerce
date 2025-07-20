@@ -17,11 +17,13 @@ const AgencyTable = ({
         return "bg-[#0DB746]";
       case "Inactive":
         return "bg-[#3B6DCB]";
-      case "Dorman":
+      case "Dormant":
         return "bg-[#1B368E]";
       case "Dissolved":
         return "bg-[#E70000CC]";
       case "Pending":
+        return "bg-[#E4A81D]";
+      default:
         return "bg-[#E4A81D]";
     }
   }
@@ -40,101 +42,8 @@ const AgencyTable = ({
   }
 
 
-  const demoAgencies: IAgency[] = [
-    {
-      _id: "1",
-      fullName: "John Doe",
-      agencyName: "Doe Agency",
-      grade: "A",
-      createdAt: "2023-10-01T12:00:00Z",
-      depositAmount: 1000,
-      feeAmount: 100,
-      status: "Active",
-      nationality: "American",
-      nationalIdOrPassport: "123456789",
-      phoneNumber: "123-456-7890",
-      personalEmail: "john.doe@example.com",
-      permanentAddress: "123 Main St, Anytown, USA",
-      personalDocuments: [],
-      agencyLogo: "",
-      serviceDivision: "Sales",
-      serviceArea: "North America",
-      employees: ["Employee 1", "Employee 2"],
-      officeAddress: "123 Main St, Anytown, USA",
-      phoneNumberOffice: "123-456-7890",
-      officeEmail: "office@doeagency.com",
-      agencyDocuments: [],
-      description: "A leading sales agency.",
-      currency: "USD",
-      userId: "user1",
-      socialLinks: [],
-      updatedAt: "2023-10-01T12:00:00Z",
-      agencyId: "AG001",
-      __v: 0,
-    },
-    {
-      _id: "2",
-      fullName: "Jane Smith",
-      agencyName: "Smith Agency",
-      grade: "B",
-      createdAt: "2023-09-15T08:30:00Z",
-      depositAmount: 1500,
-      feeAmount: 150,
-      status: "Inactive",
-      nationality: "Canadian",
-      nationalIdOrPassport: "987654321",
-      phoneNumber: "987-654-3210",
-      personalEmail: "jane.smith@example.com",
-      permanentAddress: "456 Elm St, Othertown, Canada",
-      personalDocuments: [],
-      agencyLogo: "",
-      serviceDivision: "Marketing",
-      serviceArea: "Canada",
-      employees: ["Employee 3", "Employee 4"],
-      officeAddress: "456 Elm St, Othertown, Canada",
-      phoneNumberOffice: "987-654-3210",
-      officeEmail: "office@smithagency.com",
-      agencyDocuments: [],
-      description: "A top marketing agency.",
-      currency: "CAD",
-      userId: "user2",
-      socialLinks: [],
-      updatedAt: "2023-09-15T08:30:00Z",
-      agencyId: "AG002",
-      __v: 0,
-    },
-    {
-      _id: "3",
-      fullName: "Alice Johnson",
-      agencyName: "Johnson Agency",
-      grade: "C",
-      createdAt: "2023-08-20T14:45:00Z",
-      depositAmount: 2000,
-      feeAmount: 200,
-      status: "Pending",
-      nationality: "British",
-      nationalIdOrPassport: "1122334455",
-      phoneNumber: "555-123-4567",
-      personalEmail: "alice.johnson@example.com",
-      permanentAddress: "789 Maple St, Sometown, UK",
-      personalDocuments: [],
-      agencyLogo: "",
-      serviceDivision: "Support",
-      serviceArea: "UK",
-      employees: ["Employee 5", "Employee 6"],
-      officeAddress: "789 Maple St, Sometown, UK",
-      phoneNumberOffice: "555-123-4567",
-      officeEmail: "office@johnsonagency.com",
-      agencyDocuments: [],
-      description: "A reliable support agency.",
-      currency: "GBP",
-      userId: "user3",
-      socialLinks: [],
-      updatedAt: "2023-08-20T14:45:00Z",
-      agencyId: "AG003",
-      __v: 0,
-    },
-  ];
+  // Use real data from props instead of dummy data
+  const realAgencies = agencies || [];
 
   return (
     <table className="table-auto w-full rounded border-collapse overflow-x-auto">
@@ -218,7 +127,7 @@ const AgencyTable = ({
         </tr>
       </thead>
       <tbody className="text-center text-black">
-        {demoAgencies.map((agency: IAgency, rowIndex: number) => (
+        {realAgencies.map((agency: IAgency, rowIndex: number) => (
           <tr key={rowIndex} className="odd:bg-[#FAEFD8] even:bg-white">
             <td className="py-3 border-r border-r-[#FFB200] ">
               <div
@@ -232,22 +141,24 @@ const AgencyTable = ({
               {agency.agencyName}
             </td> */}
             <td className="py-3 text-xs border-r border-r-[#FFB200]">
-              {Math.floor(Math.random() * 100)}
-            </td>
-            <td className="py-3 text-xs border-r border-r-[#FFB200]">{Math.floor(Math.random() * 100)} USD</td>
-            <td className="py-3 text-xs border-r border-r-[#FFB200]">{Math.floor(Math.random() * 100)} USD</td>
-            
-            {/* <td className="py-3 text-xs border-r border-r-[#FFB200]">
-              <ChatInterface />
-            </td> */}
-            <td className="py-3 text-xs border-r border-r-[#FFB200]">
-              {agency.depositAmount} USD
+              {/* TODO: Get actual order count from backend */}
+              0
             </td>
             <td className="py-3 text-xs border-r border-r-[#FFB200]">
-              {agency.depositAmount} USD
+              {agency.depositAmount || 0} {agency.currency || 'USD'}
             </td>
             <td className="py-3 text-xs border-r border-r-[#FFB200]">
-              {agency.feeAmount} USD
+              {agency.feeAmount || 0} {agency.currency || 'USD'}
+            </td>
+            <td className="py-3 text-xs border-r border-r-[#FFB200]">
+              {(agency.depositAmount || 0) - (agency.feeAmount || 0)} {agency.currency || 'USD'}
+            </td>
+            <td className="py-3 text-xs border-r border-r-[#FFB200]">
+              {/* TODO: Get actual refund amount from backend */}
+              0 {agency.currency || 'USD'}
+            </td>
+            <td className="py-3 text-xs border-r border-r-[#FFB200]">
+              {agency.feeAmount || 0} {agency.currency || 'USD'}
             </td>
             {/* <td className="py-3 text-xs border-r border-r-[#FFB200]">
               {agency.depositAmount - agency.feeAmount}

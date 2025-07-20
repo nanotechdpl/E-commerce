@@ -49,13 +49,27 @@ router.post(
   async (req, res) => {
     try {
       const agencies = await Agency.find();
+      
+      // Calculate analytics
+      const totalAgencies = agencies.length;
+      const totalActiveUsers = agencies.filter(agency => agency.status === 'Active').length;
+      const totalSuspendUsers = agencies.filter(agency => agency.status === 'Inactive').length;
+      const totalblockusers = agencies.filter(agency => agency.status === 'Pending').length;
+      const totalPendingDelete = 0; // TODO: Implement if needed
+      
       res.status(200).json({
         status_code: 200,
         status: true,
         message: "User agency dashboard retrieved successfully.",
         data: {
-          totalAgencies: agencies.length,
-          agencies
+          agencies,
+          analytics: {
+            totalAgencies,
+            totalactiveusers: totalActiveUsers,
+            totalSuspendUsers,
+            totalblockusers,
+            totalPendingDelete
+          }
         }
       });
     } catch (error) {

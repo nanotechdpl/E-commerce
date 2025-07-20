@@ -279,3 +279,12 @@ services:
           - /api/v1/admin/
           - /api/v1/admin/(.*)
         strip_path: false
+      - name: factory-app-routes
+        paths:
+          - /factory-app
+          - /factory-app/
+          - /factory-app/(.*)
+          - /api/v1/factory-app
+          - /api/v1/factory-app/
+          - /api/v1/factory-app/(.*)
+        strip_path: false

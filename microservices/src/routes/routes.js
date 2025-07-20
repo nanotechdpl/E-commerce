@@ -79,6 +79,7 @@ const {
 const adminPaymentRefundRouter = require("../features/admin/settings/user/routes/payment_refund");
 const adminOrderRouter = require("../features/admin/settings/user/routes/order");
 const adminDashboardRouter = require("../features/admin/settings/user/routes/dashboard");
+const { adminuserpaymentdashboardController } = require("../features/admin/settings/user/controller/payment");
 
 
 const trafficAnalyticsRoutes = require("../features/admin/analytics/traffic.routes");
@@ -151,6 +152,7 @@ router.use("/blog", blogRouter);
 router.use("/admin", adminPaymentRefundRouter);
 router.use("/admin", adminOrderRouter);
 router.use("/admin", adminDashboardRouter);
+router.post("/factory-app/admin/payment-tracker", adminuserpaymentdashboardController);
 
 // 10-06-2025:
 router.use("/pay-order", require("../features/payment/routes"));
