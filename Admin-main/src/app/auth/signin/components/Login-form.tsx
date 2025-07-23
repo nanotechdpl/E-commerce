@@ -44,7 +44,12 @@ function LoginForm() {
       }
     } catch (error) {
       console.log("Error logging in:", error);
-      setErrMsg("An unexpected error occurred. Please try again.");
+      const err = error as any;
+      if (err.response && err.response.data && err.response.data.message) {
+        setErrMsg(err.response.data.message);
+      } else {
+        setErrMsg("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

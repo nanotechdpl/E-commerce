@@ -30,8 +30,9 @@ let newUserSchema = new mongoose.Schema({
   pincode: {
     type: mongoose.Schema.Types.String,
   },
-  access: {
-    type: mongoose.Schema.Types.String,
+  permissions: {
+    type: [String],
+    default: []
   },
   isSuspended: {
     type: mongoose.Schema.Types.Boolean,

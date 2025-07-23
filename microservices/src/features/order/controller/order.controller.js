@@ -145,91 +145,21 @@ const getOrderByIdAndServiceType = async (req, res) => {
 
 const getAllOrdersStats = async (req, res) => {
   try {
-    const { email, orderStatus, serviceType, page = 1, limit = 10 } = req.query;
-
-    // Build filter
-    const filter = {};
-    if (email) filter.userEmail = email;
-    if (orderStatus) filter.orderStatus = orderStatus;
-    if (serviceType) filter.serviceType = serviceType;
-
-    // Get all orders from all collections
-    const technicalOrders = await TechnicalOrder.find(filter);
-    const constructionOrders = await ConstructionOrder.find(filter);
-    const realEstateOrders = await RealEstateOrder.find(filter);
-    const businessOrders = await BusinessOrder.find(filter);
-    const employeeHiringOrders = await EmployeeHiringOrder.find(filter);
-    const inputExportOrders = await InputExportOrder.find(filter);
-    const visaTravellingOrders = await VisaTravellingOrder.find(filter);
-
-    const allOrders = [
-      ...technicalOrders,
-      ...constructionOrders,
-      ...realEstateOrders,
-      ...businessOrders,
-      ...employeeHiringOrders,
-      ...inputExportOrders,
-      ...visaTravellingOrders,
-    ];
-
-    const orders = [
-      ...(await TechnicalOrder.find()),
-      ...(await ConstructionOrder.find()),
-      ...(await RealEstateOrder.find()),
-      ...(await BusinessOrder.find()),
-      ...(await EmployeeHiringOrder.find()),
-      ...(await InputExportOrder.find()),
-      ...(await VisaTravellingOrder.find()),
-    ];
-
-    // Pagination
+    const { page = 1, limit = 10 } = req.query;
     const pageInt = parseInt(page, 10) || 1;
     const limitInt = parseInt(limit, 10) || 10;
-    const startIndex = (pageInt - 1) * limitInt;
-    const endIndex = startIndex + limitInt;
-    const paginatedOrders = allOrders.slice(startIndex, endIndex);
+    const skip = (pageInt - 1) * limitInt;
 
-    // Count by status
-    const statusCounts = {
-      cancel: 0,
-      refund: 0,
-      delivery: 0,
-      complete: 0,
-      stopped: 0,
-      working: 0,
-      payment: 0,
-      pending: 0,
-    };
-
-    orders.forEach((order) => {
-      const status = (order.orderStatus || "").toLowerCase();
-      if (statusCounts.hasOwnProperty(status)) {
-        statusCounts[status]++;
-      }
-      if (status === "waiting") statusCounts.working++;
-    });
+    // Fetch from the 'order' collection
+    const totalOrders = await Orders.countDocuments();
+    const orders = await Orders.find().skip(skip).limit(limitInt);
 
     res.status(200).json({
-      totalOrders: orders.length,
-      totalTechnicalOrders: technicalOrders.length,
-      totalConstructionOrders: constructionOrders.length,
-      totalRealEstateOrders: realEstateOrders.length,
-      totalBusinessOrders: businessOrders.length,
-      totalEmployeeHiringOrders: employeeHiringOrders.length,
-      totalInputExportOrders: inputExportOrders.length,
-      totalVisaTravellingOrders: visaTravellingOrders.length,
-      totalCancelOrders: statusCounts.cancel,
-      totalRefundedOrders: statusCounts.refund,
-      totalDeliveryOrders: statusCounts.delivery,
-      totalCompleteOrders: statusCounts.complete,
-      totalStoppedOrders: statusCounts.stopped,
-      totalWorkingOrders: statusCounts.working,
-      totalPaymentOrders: statusCounts.payment,
-      totalPendingOrders: statusCounts.pending,
-      data: paginatedOrders,
+      totalOrders,
+      data: orders,
       page: pageInt,
       limit: limitInt,
-      totalPages: Math.ceil(allOrders.length / limitInt),
+      totalPages: Math.ceil(totalOrders / limitInt),
       message: "Successfully fetched all orders stats",
       status: 200,
       success: true,
@@ -352,38 +282,9 @@ const createNewOrder = async (req, res) => {
 const getAllOrders = async (req, res) => {
   try {
     const orders = await ordersService.getAll();
-    return sendResponse(
-      res,
-      200,
-      false,
-      "Order",
-      "Successfully fetched orders",
-      { orders }
-    );
-    // res.status(200).json({
-    //   title: "Order Message",
-    //   status: 200,
-    //   successful: true,
-    //   message: "successfully fetched orders.",
-    //   orders,
-    // });
+    return res.status(200).json({ data: orders });
   } catch (error) {
-    return sendResponse(
-      res,
-      500,
-      false,
-      "Order",
-      "Internal server error",
-      null,
-      error.message
-    );
-    // res.status(500).json({
-    //   title: "Order Message",
-    //   status: 500,
-    //   successful: false,
-    //   message: "Internal server error",
-    //   error: error.message,
-    // });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -413,11 +314,9 @@ const getOrderByID = async (req, res) => {
 const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, serviceType } = req.body;
-    const image = req.file;
-    const updateData = { title, serviceType };
-    if (image) {
-      updateData.photo = image.buffer.toString("base64");
+    const updateData = req.body;
+    if (req.file) {
+      updateData.photo = req.file.buffer.toString("base64");
     }
     console.log("updatedOrder:", updateData);
     console.log("id:", id);

@@ -273,7 +273,7 @@ const CreateExport = () => {
             </thead>
             <tbody>
               {
-               (exportedData || []).map((row, index) => (
+               (Array.isArray(exportedData) ? exportedData : []).map((row, index) => (
                 <tr
                   key={index}
                   className={`${
@@ -326,41 +326,7 @@ const CreateExport = () => {
                       >
                         <TiArrowUnsorted size={20} />
                       </button>
-                      {row?.status === "active" ? (
-                        <>
-                          <button
-                            onClick={() =>
-                              updatedStatus({
-                                id: row._id || "",
-                                status: "inactive",
-                              })
-                            }
-                            className="flex items-center cursor-pointer"
-                          >
-                            <PiToggleRight
-                              size={20}
-                              className="text-green-500"
-                            />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() =>
-                              updatedStatus({
-                                id: row._id || "",
-                                status: "active",
-                              })
-                            }
-                            className="flex items-center cursor-pointer"
-                          >
-                            <PiToggleRight
-                              size={20}
-                              className="text-red-500 rotate-180"
-                            />
-                          </button>
-                        </>
-                      )}
+                      {/* Remove or skip status-related UI since Export does not have a status property */}
                       <button
                         className="text-blue-600 cursor-pointer"
                         onClick={() => handleEdit(row._id!)}

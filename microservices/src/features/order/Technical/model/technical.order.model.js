@@ -154,23 +154,14 @@ const TechnicalOrderSchema = new schema(
 TechnicalOrderSchema.pre("save", async function (next) {
   try {
     if (!this.orderId) {
-      const session = await mongoose.startSession();
-      session.startTransaction();
-      try {
-        const counter = await TechnicalOrderCounter.findOneAndUpdate(
-          { modelName: "technicalOrder" },
-          { $inc: { sequenceValue: 1 } },
-          { new: true, upsert: true, session }
-        );
-        const orderId = counter.sequenceValue.toString().padStart(5, "0");
-        this.orderId = `TO${orderId}`;
-        await session.commitTransaction();
-        session.endSession();
-      } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
-      }
+      // PATCH: Remove session/transaction for local/dev
+      const counter = await TechnicalOrderCounter.findOneAndUpdate(
+        { modelName: "technicalOrder" },
+        { $inc: { sequenceValue: 1 } },
+        { new: true, upsert: true }
+      );
+      const orderId = counter.sequenceValue.toString().padStart(5, "0");
+      this.orderId = `TO${orderId}`;
     }
     next();
   } catch (error) {

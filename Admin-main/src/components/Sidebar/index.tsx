@@ -101,6 +101,7 @@ const Sidebar = ({
               src={"/images/logo/admin.png"}
               alt="Logo"
               priority
+              style={{ height: isCTabActive ? 48 : 32, width: isCTabActive ? 80 : 60 }}
             />
           </Link>
         </div>

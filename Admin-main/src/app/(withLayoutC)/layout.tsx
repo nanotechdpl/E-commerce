@@ -34,7 +34,9 @@ export default function DefaultLayout({
       />
       <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden bg-[#CCCCFF]">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="bg-[#CCCCFF]">{children}</main>
+        <main className="bg-[#CCCCFF]">
+          {children}
+        </main>
       </div>
     </div>
   );

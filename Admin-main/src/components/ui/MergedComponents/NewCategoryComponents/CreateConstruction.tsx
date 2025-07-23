@@ -157,8 +157,10 @@ const CreateConstruction = () => {
           `/menu-services/construction`,
           formData
         );
+        console.log("API response:", res.data);
         if (res.data && res.data.success) {
-          dispatch(addConstruction(res.data.ConstructionData));
+          // Use the correct property from the response
+          dispatch(addConstruction(res.data.ConstructionData || res.data.data));
           setFormData({
             photo: "",
             title: "",
@@ -271,110 +273,107 @@ const CreateConstruction = () => {
               </tr>
             </thead>
             <tbody>
-              {construction?.map((row, index) => (
-                <tr
-                  key={index}
-                  className={`${
-                    index % 2 === 0 ? "bg-[#FAEFD8]" : "bg-[#fff]"
-                  } md:text-base text-sm`}
-                >
-                  <td className="p-3 text-center border-r border-black/20 border-opacity-50">
-                    <div className="w-[33.36px] h-[26.1px] bg-[#FFB200] mx-auto">
-                      <span
-                        className={`${poppins.className} font-bold text-[13.43px] leading-[20.15px] text-[#000000]`}
-                      >
-                        {index + 1}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-3 text-center mx-auto border-r border-black/20 border-opacity-50">
-                    <Image
-                      src={
-                        row?.photo && row.photo.startsWith("http")
-                          ? row.photo
-                          : "/placeholder.png" // Use a valid placeholder image in your public folder
-                      }
-                      width={70}
-                      height={50}
-                      alt="image"
-                      className="rounded-md w-[70px] h-[70px] object-fill"
-                    />
-                  </td>
-                  <td
-                    className={`p-3 text-center border-r border-black/20 border-opacity-50 ${poppins.className} font-medium text-[14.13px] leading-[21.2px] text-[#000000]`}
+              {construction?.map((row, index) => {
+                if (!row || typeof row.status === "undefined") return null;
+                return (
+                  <tr
+                    key={index}
+                    className={`${
+                      index % 2 === 0 ? "bg-[#FAEFD8]" : "bg-[#fff]"
+                    } md:text-base text-sm`}
                   >
-                    {row?.title}
-                  </td>
-                  <td
-                    className={`p-3 text-center border-r border-black/20 border-opacity-50 ${poppins.className} font-medium text-[14.13px] leading-[21.2px] text-[#000000]`}
-                  >
-                    {row?.tag}
-                  </td>
-                  <td
-                    className={`max-w-[258px] mx-auto p-3 text-center border-r border-black/20 border-opacity-50 ${poppins.className} font-medium text-[10px] leading-[15px] text-[#00000099]`}
-                  >
-                    {row?.category}
-                  </td>
+                    <td className="p-3 text-center border-r border-black/20 border-opacity-50">
+                      <div className="w-[33.36px] h-[26.1px] bg-[#FFB200] mx-auto">
+                        <span
+                          className={`${poppins.className} font-bold text-[13.43px] leading-[20.15px] text-[#000000]`}
+                        >
+                          {index + 1}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-3 text-center mx-auto border-r border-black/20 border-opacity-50">
+                      <Image
+                        src={
+                          row?.photo && row.photo.startsWith("http")
+                            ? row.photo
+                            : "/placeholder.png" // Use a valid placeholder image in your public folder
+                        }
+                        width={70}
+                        height={50}
+                        alt="image"
+                        className="rounded-md w-[70px] h-[70px] object-fill"
+                      />
+                    </td>
+                    <td
+                      className={`p-3 text-center border-r border-black/20 border-opacity-50 ${poppins.className} font-medium text-[14.13px] leading-[21.2px] text-[#000000]`}
+                    >
+                      {row?.title}
+                    </td>
+                    <td
+                      className={`p-3 text-center border-r border-black/20 border-opacity-50 ${poppins.className} font-medium text-[14.13px] leading-[21.2px] text-[#000000]`}
+                    >
+                      {row?.tag}
+                    </td>
+                    <td
+                      className={`max-w-[258px] mx-auto p-3 text-center border-r border-black/20 border-opacity-50 ${poppins.className} font-medium text-[10px] leading-[15px] text-[#00000099]`}
+                    >
+                      {row?.category}
+                    </td>
 
-                  <td className="p-3 text-center border-r border-black/20 border-opacity-50">
-                    <div className="flex justify-center space-x-2">
-                      <button
-                        onClick={handleSortRows}
-                        className="text-yellow-600"
-                      >
-                        <TiArrowUnsorted size={20} />
-                      </button>
-                      {row.status === "active" ? (
-                        <>
-                          <button
-                            onClick={() =>
-                              updatedStatus({
-                                id: row._id || "",
-                                status: "inactive",
-                              })
-                            }
-                            className="flex items-center cursor-pointer"
-                          >
-                            <PiToggleRight
-                              size={20}
-                              className="text-green-500"
-                            />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() =>
-                              updatedStatus({
-                                id: row._id || "",
-                                status: "active",
-                              })
-                            }
-                            className="flex items-center cursor-pointer"
-                          >
-                            <PiToggleRight
-                              size={20}
-                              className="text-red-500 rotate-180"
-                            />
-                          </button>
-                        </>
-                      )}
-                      <button
-                        className="text-blue-600 cursor-pointer"
-                        onClick={() => handleEdit(row._id!)}
-                      >
-                        <CiEdit size={20} />
-                      </button>
-                      <button
-                        className="text-red-600 cursor-pointer"
-                        onClick={() => handleDeleteRow(row._id!)}
-                      >
-                        <BsTrash3 size={20} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    <td className="p-3 text-center border-r border-black/20 border-opacity-50">
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          onClick={handleSortRows}
+                          className="text-yellow-600"
+                        >
+                          <TiArrowUnsorted size={20} />
+                        </button>
+                        {row.status === "active" ? (
+                          <>
+                            <button
+                              onClick={() =>
+                                row._id ? updatedStatus({ id: row._id, status: "inactive" }) : toast.error("Invalid construction ID")
+                              }
+                              className="flex items-center cursor-pointer"
+                            >
+                              <PiToggleRight
+                                size={20}
+                                className="text-green-500"
+                              />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() =>
+                                row._id ? updatedStatus({ id: row._id, status: "active" }) : toast.error("Invalid construction ID")
+                              }
+                              className="flex items-center cursor-pointer"
+                            >
+                              <PiToggleRight
+                                size={20}
+                                className="text-red-500 rotate-180"
+                              />
+                            </button>
+                          </>
+                        )}
+                        <button
+                          className="text-blue-600 cursor-pointer"
+                          onClick={() => row._id ? handleEdit(row._id) : toast.error("Invalid construction ID")}
+                        >
+                          <CiEdit size={20} />
+                        </button>
+                        <button
+                          className="text-red-600 cursor-pointer"
+                          onClick={() => row._id ? handleDeleteRow(row._id) : toast.error("Invalid construction ID")}
+                        >
+                          <BsTrash3 size={20} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

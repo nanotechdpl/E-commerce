@@ -23,6 +23,8 @@ const Sidebar: FC = () => {
             <Image
               src={LogoC}
               alt="logo"
+              width={64}
+              height={64}
               className="-ml-1 h-16 w-16 cursor-pointer text-white"
             />
           </div>

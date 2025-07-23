@@ -236,11 +236,18 @@ const CreateArchitecture = () => {
     try {
       const res = await instance.delete(`/menu-services/real-estate/${id}`);
       if (res.data && res.data.success) {
-        dispatch(deleteRealEstate(res.data.technical._id));
+        // Use the correct property for the deleted _id
+        dispatch(deleteRealEstate(id));
         toast.success("Real Estate deleted successfully!");
+      } else {
+        toast.error(res.data?.message || "Failed to delete real estate");
       }
-    } catch (error) {
-      toast.error("Error deleting Technical");
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        toast.error("Real Estate not found (already deleted or invalid ID)");
+      } else {
+        toast.error("Error deleting Real Estate");
+      }
     }
   };
 

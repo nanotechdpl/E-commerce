@@ -44,7 +44,7 @@ function OTPForm({ email }: { email: string }) {
       localStorage.setItem("otp", otp);
       setIsSubmitting(true);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/factory-app/auth-admin/verify-otp`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admins/verify-forgot-password-otp`,
         {
           method: "POST",
           headers: {

@@ -33,7 +33,7 @@ const adminuserorderdashboardController = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return handleError(error.message)(res);
+    return res.status(500).json({ error: error.message });
   }
 };
 const adminretrievesingleuserorderController = async (req, res, next) => {
@@ -50,7 +50,7 @@ const adminretrievesingleuserorderController = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return handleError(error.message)(res);
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -71,7 +71,7 @@ const adminupdateuserorderstatusController = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return handleError(error.message)(res);
+    return res.status(500).json({ error: error.message });
   }
 };
 const adminupdateuserorderprofitController = async (req, res, next) => {
@@ -100,7 +100,7 @@ const adminupdateuserorderprofitController = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return handleError(error.message)(res);
+    return res.status(500).json({ error: error.message });
   }
 };
 const adminupdateuserordersignatoryController = async (req, res, next) => {
@@ -120,7 +120,7 @@ const adminupdateuserordersignatoryController = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return handleError(error.message)(res);
+    return res.status(500).json({ error: error.message });
   }
 };
 

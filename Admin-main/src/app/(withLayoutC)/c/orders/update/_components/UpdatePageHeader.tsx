@@ -5,6 +5,8 @@ interface UpdatePageHeaderProps {
   handleChangeStatusModal: (data: boolean) => void;
   handleDeleteShowModal: (data: boolean) => void;
   handlePaymentModal: (data: boolean) => void;
+  selectedStatus: string;
+  setSelectedStatus: React.Dispatch<React.SetStateAction<string>>;
 }
 const UpdatePageHeader = ({
   setShowStatusChangeModal,
@@ -13,6 +15,8 @@ const UpdatePageHeader = ({
   handleChangeStatusModal,
   handleDeleteShowModal,
   handlePaymentModal,
+  selectedStatus,
+  setSelectedStatus,
 }: UpdatePageHeaderProps) => {
   return (
     <div className="flex justify-between items-center mb-8 z-999">
@@ -59,17 +63,20 @@ const UpdatePageHeader = ({
             </div>
           )}
         </div>
-        <select className="bg-transparent border-2 text-black px-4 py-2 rounded-lg" defaultValue="">
+        <select
+          value={selectedStatus}
+          onChange={e => setSelectedStatus(e.target.value)}
+          className="bg-transparent border-2 text-black px-4 py-2 rounded-lg">
           <option value="" disabled>
             Status
           </option>
-          <option value="Pending">Pending</option>
-          <option value="Inactive">Payment</option>
-          <option value="Active">Waiting</option>
-          <option value="Dormant">Working</option>
-          <option value="Dissolved">Complete</option>
-          <option value="delivery">Delivery</option>
-          <option value="cancel">Cancel</option>
+          <option value="pending">Pending</option>
+          <option value="payment">Payment</option>
+          <option value="waiting">Waiting</option>
+          <option value="working">Working</option>
+          <option value="completed">Complete</option>
+          <option value="delivered">Delivery</option>
+          <option value="cancelled">Cancel</option>
         </select>
         <button
           className="bg-green-500 text-white px-4 py-2 rounded-lg"

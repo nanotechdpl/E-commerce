@@ -101,7 +101,7 @@ UserSchema.pre("save", async function (next) {
       { new: true, upsert: true, session }
     );
 
-    const userId = counterDoc.sequenceValue.toString().padStart(5, "0"); // Ensure UID format like U001, U002, etc.
+    const userId = counterDoc.sequenceValue.toString().padStart(5, "0"); // Ensure UID format like C00001, etc.
     this.userUID = `C${userId}`;
 
     await session.commitTransaction();

@@ -24,13 +24,16 @@ function CreateNewPassword() {
       )}
       onSubmit={async (values) => {
         const mail = localStorage.getItem("email");
-        const otp = localStorage.getItem("otp");
-        const newValues = { newPassword: values.newpassword, email: mail, otp };
+        if (!mail) {
+          setErrMsg("No email found. Please restart the password reset process.");
+          return;
+        }
+        const newValues = { newPassword: values.newpassword, email: mail };
 
         setIsSubmitting(true);
 
         await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/factory-app/auth-admin/new-password`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admins/reset-password`,
           {
             method: "POST",
             body: JSON.stringify(newValues),
@@ -43,7 +46,7 @@ function CreateNewPassword() {
             if (data.status && data.status === 200) {
               router.push("/auth/success-password");
             } else {
-              setErrMsg(data.message);
+              setErrMsg(data.message || "Something went wrong. Please try again.");
             }
 
             setIsSubmitting(false);

@@ -405,6 +405,8 @@ export const FullScreen = () => {
           alt="Rotate"
           width={24}
           height={32}
+          style={{ height: 'auto' }}
+          priority
         // className={""}
         />
       </span>

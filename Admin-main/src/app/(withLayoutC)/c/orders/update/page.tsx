@@ -36,7 +36,7 @@ export default function PendingPage() {
   const orders: any = useSelector((state: RootState) => state.orders?.orders);
   const order_id = searchParams.get("orderId") || null;
   const singleOrder: any =
-    orders?.data?.find((order) => order?.orderId === order_id) || null;
+    orders?.data?.find((order: any) => order?._id === order_id) || null;
   console.log("singleOrder", singleOrder);
   // console.log("orderId", order);
   const [formData, setFormData] = useState<ProjectFormData>({
@@ -47,7 +47,14 @@ export default function PendingPage() {
           : "",
       description: singleOrder && singleOrder?.description,
   });
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (singleOrder?.orderStatus) {
+      setSelectedStatus(singleOrder.orderStatus);
+    }
+  }, [singleOrder]);
 
   console.log(singleOrder);
   const actions = useMemo(
@@ -103,19 +110,26 @@ export default function PendingPage() {
     setShowPaymentModal(false);
   };
 
-  const handleSave = () => {
-    axiosInstance
-      .post("/admin/update/order/status", {
-        orderid: orderId,
-        status: "payment",
-        pin: "123456",
-      })
-      .then((res) => {
+  const handleSave = async () => {
+    if (!singleOrder?._id) return;
+    try {
+      const res = await fetch(`http://localhost:7000/api/v1/orders/${singleOrder._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderStatus: selectedStatus }),
+        credentials: 'include',
+      });
+      if (res.ok) {
         setShowChangeStatus(false);
-        console.log(res);
-        debugger;
-      })
-      .catch((err) => console.log(err));
+        alert('Order status updated successfully!');
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert('Failed to update order: ' + (data.message || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Error updating order: ' + err);
+    }
   };
 
   return (
@@ -127,8 +141,25 @@ export default function PendingPage() {
       {showDeleteConfirmation && (
         <DeleteConfirmationModal
           onClose={handleDeleteShowModal}
-          onConfirm={function (): void {
-            throw new Error("Function not implemented.");
+          onConfirm={async () => {
+            if (!singleOrder?._id) return;
+            try {
+              const res = await fetch(`http://localhost:7000/api/v1/orders/${singleOrder._id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+              });
+              if (res.ok) {
+                setShowDeleteConfirmation(false);
+                alert('Order deleted successfully!');
+                window.location.href = '/c/orders'; // Redirect to orders list
+              } else {
+                const data = await res.json();
+                alert('Failed to delete order: ' + (data.message || 'Unknown error'));
+              }
+            } catch (err) {
+              alert('Error deleting order: ' + err);
+            }
           }}
         />
       )}
@@ -150,6 +181,8 @@ export default function PendingPage() {
           handleChangeStatusModal={setShowStatusChangeModal}
           handlePaymentModal={setShowPaymentModal}
           setShowStatusChangeModal={setShowChangeStatus}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
         />
         <div className="bg-white text-black p-8 rounded shadow">
           <h2 className="text-center text-2xl font-semibold mb-2">

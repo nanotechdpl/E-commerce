@@ -188,6 +188,10 @@ const CreateTechnical = () => {
   const handleSortRows = (): void => {};
 
   const handleDeleteRow = async (id: string) => {
+    if (!id) {
+      toast.error("Invalid technical ID");
+      return;
+    }
     try {
       const res = await instance.delete(`/menu-services/technical/${id}`);
       if (res.data && res.data.success) {
@@ -361,7 +365,7 @@ const CreateTechnical = () => {
                       </button>
                       <button
                         className="text-red-600 cursor-pointer"
-                        onClick={() => handleDeleteRow(row._id!)}
+                        onClick={() => row._id ? handleDeleteRow(row._id) : toast.error("Invalid technical ID")}
                       >
                         <BsTrash3 size={20} />
                       </button>

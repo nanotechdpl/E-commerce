@@ -12,28 +12,13 @@ import React, { useEffect, useState } from "react";
 
 
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [loading, setLoading] = useState<boolean>(true);
-
-
-  useEffect(() => {
-   
-    setLoading(false); 
-  }, []);
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body suppressHydrationWarning={true}>
-        <div className="">
-          <StoreProvider>
-            {loading ? <Loader /> : <AntdRegistry>{children}</AntdRegistry>}
-          </StoreProvider>
-        </div>
-         <ToastContainer position="top-right" autoClose={3000} />
+    <html>
+      <body>
+        <StoreProvider>
+          {children}
+        </StoreProvider>
       </body>
     </html>
   );

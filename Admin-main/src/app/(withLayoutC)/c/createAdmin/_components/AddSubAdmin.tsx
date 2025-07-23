@@ -94,8 +94,8 @@ const AddSubAdminModal = () => {
       } else {
         toast.error("Failed to create admin");
       }
-    } catch (error) {
-      toast.error("Error creating admin");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Error creating admin");
     } finally {
       setLoading(false);
     }

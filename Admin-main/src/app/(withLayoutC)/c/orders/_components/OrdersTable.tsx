@@ -128,7 +128,7 @@ const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
               <td className="py-3">
                 <Link
                   className="rounded-md bg-[#FFB200] px-3 py-1 text-[14px] text-black transition-all hover:bg-black hover:text-white hover:shadow-md"
-                  href={`/c/orders/update?orderId=${order?.orderId}`}
+                  href={`/c/orders/update?orderId=${order?._id}`}
                 >
                   View
                 </Link>

@@ -6,9 +6,6 @@ export const metadata: Metadata = {
   description: "This is admin panel",
 };
 
-export default function Home() {
-
-  return (
-    <Dashboard/>
-  );
+export default function DashboardPage() {
+  return <Dashboard />;
 }

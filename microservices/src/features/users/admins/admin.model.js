@@ -147,7 +147,7 @@ const AdminSchema = new mongoose.Schema(
       enum: ["main-admin", "sub-admin"],
       default: "sub-admin",
     },
-    permissions: { type: PermissionsSchema, default: () => ({}) },
+    permissions: { type: [String], default: [] },
     isActive: { type: Boolean, default: true },
     lastActiveAt: { type: Date, default: Date.now },
   },
