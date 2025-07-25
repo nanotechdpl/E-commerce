@@ -92,22 +92,21 @@ const SocialSharePayment: React.FC = () => {
   };
 
   const handleAddSocialLink = async () => {
-    if (!socialUrl) return;
-
+    if (!selectedSocialType || !socialUrl) {
+      alert("Please select a social type and enter a URL.");
+      return;
+    }
     try {
       setIsSubmitting(true);
-
       const res = await instance.post("/admin/home/social-icons", {
         icon: selectedSocialType,
         link: socialUrl,
       });
       setSocialLinks((prev) => [...prev, res.data.data]);
       setIsSubmitting(false);
-
       console.log(res);
     } catch (error) {
       setIsSubmitting(false);
-
       console.log(error);
     }
   };
@@ -142,7 +141,7 @@ const SocialSharePayment: React.FC = () => {
             <div className="w-12 h-12 flex items-center justify-center">
               <img
                 src={previewPaymentIcon || ""}
-                alt="Payment icon"
+                alt="Payment icon preview"
                 className="h-8 object-contain"
               />
             </div>
@@ -167,7 +166,7 @@ const SocialSharePayment: React.FC = () => {
                 >
                   <img
                     src={icon.icon || ""}
-                    alt={""}
+                    alt="Payment icon"
                     className="h-8 object-contain"
                   />
                   <button
@@ -220,7 +219,7 @@ const SocialSharePayment: React.FC = () => {
                 >
                   <img
                     src={link.link || ""}
-                    alt=""
+                    alt="Social link icon"
                     className="h-8 object-contain"
                   />{" "}
                   <button

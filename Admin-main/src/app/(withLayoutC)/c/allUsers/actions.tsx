@@ -160,6 +160,23 @@ export const suspendUser = (id: string) => {
     }
   };
 };
+export const updateUserStatus = (id: string, status: string) => {
+  return async (dispatch: Dispatch) => {
+    dispatch(fetchingUsersData());
+    try {
+      const res = await axiosInstance.post(
+        `/admin/update/user/status`,
+        { userid: id, status }
+      );
+      // Optionally, refresh user data
+      dispatch(getSingleUser(id));
+      dispatch(getAllUser());
+    } catch (error: any) {
+      console.log(error);
+      dispatch(toggleUserFailed({ error: error?.message }));
+    }
+  };
+};
 export const getUserOrdersById = (id: string) => {
   return async (dispatch: Dispatch) => {
     dispatch(fetchingUsersData());

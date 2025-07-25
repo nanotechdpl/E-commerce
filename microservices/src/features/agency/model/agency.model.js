@@ -95,25 +95,35 @@ const AgencySchema = new mongoose.Schema(
 AgencySchema.pre("save", async function (next) {
   try {
     if (!this.agencyId) {
-      const session = await mongoose.startSession();
-      session.startTransaction();
-
-      try {
+      // Check if the connection is a replica set (supports transactions)
+      const isReplicaSet = mongoose.connection.readyState === 1 && mongoose.connection.hosts && mongoose.connection.hosts.length > 1;
+      if (isReplicaSet) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+          const counter = await AgencyCounterModel.findOneAndUpdate(
+            { modelName: "Agency" },
+            { $inc: { sequenceValue: 1 } },
+            { new: true, upsert: true, session }
+          );
+          const agencyId = counter.sequenceValue.toString().padStart(5, "0");
+          this.agencyId = `A${agencyId}`;
+          await session.commitTransaction();
+          session.endSession();
+        } catch (error) {
+          await session.abortTransaction();
+          session.endSession();
+          throw error;
+        }
+      } else {
+        // Standalone: no transaction
         const counter = await AgencyCounterModel.findOneAndUpdate(
           { modelName: "Agency" },
           { $inc: { sequenceValue: 1 } },
-          { new: true, upsert: true, session }
+          { new: true, upsert: true }
         );
-
         const agencyId = counter.sequenceValue.toString().padStart(5, "0");
         this.agencyId = `A${agencyId}`;
-
-        await session.commitTransaction();
-        session.endSession();
-      } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
       }
     }
     next();

@@ -3,10 +3,12 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import { use, useEffect, useMemo } from "react";
 import { FaInstagramSquare, FaTwitter } from "react-icons/fa";
 import { SiFacebook, SiYoutube } from "react-icons/si";
-import { getSingleUser } from "../../actions";
+import { getSingleUser, updateUserStatus, getAllUser } from "../../actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
 import { NextPage } from "next";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const icons = [
   <SiFacebook
@@ -45,19 +47,32 @@ type PagePropsTypes = {
 
 export const Page: NextPage<PagePropsTypes> = (props) => {
   const user: any = useSelector((state: RootState) => state.users?.userById);
-
   const dispatch = useDispatch();
   const { params } = props;
   const { userId } = use(params);
-  // const userId = params?.userId;
   const actions = useMemo(
-    () => bindActionCreators({ getSingleUser }, dispatch),
+    () => bindActionCreators({ getSingleUser, updateUserStatus, getAllUser }, dispatch),
     [dispatch]
   );
+  const [selectedStatus, setSelectedStatus] = useState(user?.status || "active");
+  const [saving, setSaving] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     actions.getSingleUser(userId);
-  }, [actions,userId]);
+  }, [actions, userId]);
+
+  useEffect(() => {
+    setSelectedStatus(user?.status || "active");
+  }, [user]);
+
+  const handleStatusSave = async () => {
+    setSaving(true);
+    await actions.updateUserStatus(userId, selectedStatus);
+    await actions.getAllUser(); // Refresh the user list
+    setSaving(false);
+    router.push(`/c/allUsers?statusChangedUser=${encodeURIComponent(user?.name || userId)}&newStatus=${encodeURIComponent(selectedStatus)}`);
+  };
 
   return (
     <div className="w-full h-[calc(h-screen - 76px)] mt-[76px] container mx-auto">

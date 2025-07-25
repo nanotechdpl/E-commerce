@@ -17,7 +17,6 @@ export const getAllPayments = (userId: string) => {
       const res = await axiosInstance.post(
         `/admin/user/payment/dashboard`
       );
-      // console.log(res?.data);
       dispatch(fetchedAllPayments(res?.data?.data));
     } catch (error: any) {
       console.log(error);

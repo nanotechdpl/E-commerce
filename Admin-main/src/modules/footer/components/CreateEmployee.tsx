@@ -196,6 +196,12 @@ const CreateEmployee: React.FC = () => {
       }
     } else {
       try {
+        const { photo, name, title } = formData;
+        if (!photo || !name || !title) {
+          toast.error("Please fill in all required fields (photo, name, title)");
+          setLoading(false);
+          return;
+        }
         console.log("formData: ", formData);
         const res = await instance.post("/employers/newEmployee", formData);
         console.log("add res: ", res);
@@ -292,7 +298,7 @@ const CreateEmployee: React.FC = () => {
                     {formData?.photo ? (
                       <Image
                         src={formData?.photo}
-                        alt="Uploaded Preview"
+                        alt={formData?.name || "Employee Photo"}
                         width={50}
                         height={50}
                         className="rounded-full w-[50px] h-[50px] object-center object-fill"
@@ -428,7 +434,7 @@ const CreateEmployee: React.FC = () => {
                       <td className="p-3 border-r border-black border-opacity-50 text-center">
                         <Image
                           src={row.photo}
-                          alt={row.name}
+                          alt={row.name || "Employee Photo"}
                           width={50}
                           height={50}
                           className="rounded-full w-[50px] h-[50px] object-center object-fill"

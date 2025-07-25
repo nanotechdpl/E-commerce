@@ -199,6 +199,12 @@ const CreateGlobalBranch: React.FC = () => {
       }
     } else {
       try {
+        const { name, address, photo, call, email } = formData;
+        if (!name || !address || !photo || !call || !email) {
+          toast.error("Please fill in all required fields (name, address, photo, call, email)");
+          setLoading(false);
+          return;
+        }
         console.log("formData: ", formData);
         const res = await instance.post("/admin/global-location", formData);
         console.log("add res: ", res);

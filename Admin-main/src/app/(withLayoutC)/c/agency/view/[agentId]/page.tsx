@@ -4,7 +4,7 @@ import { AlertTriangle, Check, X } from "lucide-react";
 import Image from "next/image";
 import React, { use, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSingleAgency } from "../../actions";
+import { getSingleAgency, deleteAgency, updateAgencyStatus } from "../../actions";
 import { RootState } from "@/redux/store/store";
 import { NextPage } from "next";
 import { Button } from "antd";
@@ -129,9 +129,10 @@ const AgencyRegistrationForm: NextPage<PagePropsTypes> = (props) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [pin, setPin] = useState("");
   const dispatch = useDispatch();
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const actions = useMemo(
-    () => bindActionCreators({ getSingleAgency }, dispatch),
+    () => bindActionCreators({ getSingleAgency, deleteAgency, updateAgencyStatus }, dispatch),
     [dispatch]
   );
 
@@ -183,6 +184,19 @@ const AgencyRegistrationForm: NextPage<PagePropsTypes> = (props) => {
   const handlePinSubmit = () => {
     setShowPinModal(false);
     setShowSuccessModal(true);
+  };
+
+  const handleDeleteAgency = () => {
+    if (agentId) {
+      actions.deleteAgency(agentId);
+    }
+    setShowConfirmModal(false);
+  };
+  const handleStatusSave = () => {
+    if (agentId && selectedStatus) {
+      actions.updateAgencyStatus(agentId, selectedStatus);
+      setShowSuccessModal(true);
+    }
   };
 
   const handleInputChange = (
@@ -270,7 +284,11 @@ const AgencyRegistrationForm: NextPage<PagePropsTypes> = (props) => {
             <option value="private">Private</option>
             <option value="Public">Public</option>
           </select>
-          <select className="bg-transparent border-2 border-[#ffb200] text-black px-4 py-2 rounded">
+          <select
+            className="bg-transparent border-2 border-[#ffb200] text-black px-4 py-2 rounded"
+            value={selectedStatus}
+            onChange={e => setSelectedStatus(e.target.value)}
+          >
             <option value="" disabled>
               Status
             </option>
@@ -282,7 +300,7 @@ const AgencyRegistrationForm: NextPage<PagePropsTypes> = (props) => {
           </select>
           <button
             className="bg-[#ffb200] text-black px-4 py-2 rounded"
-            onClick={handleStoreClick}
+            onClick={handleStatusSave}
           >
             Save
           </button>
@@ -354,7 +372,7 @@ const AgencyRegistrationForm: NextPage<PagePropsTypes> = (props) => {
                 </button>
                 <button
                   className="flex-1 px-4 py-2 bg-yellow-400 rounded-lg"
-                  onClick={() => setShowConfirmModal(false)}
+                  onClick={handleDeleteAgency}
                 >
                   Yes
                 </button>

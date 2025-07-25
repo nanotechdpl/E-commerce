@@ -1,7 +1,10 @@
 import { Poppins } from "next/font/google";
 import Link from "next/link";
-import ChatInterface from "../ChatInterface";
+import { useChatContext } from "@/modules/live-chat/hooks/useChatContext";
 import { OrderData } from "@/types/orderData";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import PaymentHistory from "../../orders/update/_components/PaymentHistory";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -17,9 +20,35 @@ const formatToDDMMYYYY = (isoDate: any) => {
   return `${day}-${month}-${year}`;
 };
 
-
+const LiveChatManage = dynamic(() => import("@/modules/live-chat/LiveChatManage").then(mod => mod.LiveChatManage), { ssr: false });
 
 const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
+  const { updateReceiverId, updateIsChatSelect } = useChatContext();
+  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [chatUserId, setChatUserId] = useState<string | null>(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
+
+  const openChatModal = (userId: string) => {
+    setChatUserId(userId);
+    updateReceiverId(userId);
+    updateIsChatSelect(true);
+    setChatModalOpen(true);
+  };
+
+  const closeChatModal = () => {
+    setChatModalOpen(false);
+    setChatUserId(null);
+  };
+
+  const openPaymentModal = (orderId: string) => {
+    setPaymentOrderId(orderId);
+    setPaymentModalOpen(true);
+  };
+  const closePaymentModal = () => {
+    setPaymentModalOpen(false);
+    setPaymentOrderId(null);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -46,7 +75,24 @@ const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
     }
   }
   return (
-    <table className="w-full overflow-x-scroll rounded-lg border-collapse ">
+    <>
+      {chatModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl relative">
+            <button
+              className="absolute top-2 right-2 text-black bg-[#FFB200] rounded-full px-2 py-1"
+              onClick={closeChatModal}
+            >
+              Close
+            </button>
+            <LiveChatManage />
+          </div>
+        </div>
+      )}
+      {paymentModalOpen && paymentOrderId && (
+        <PaymentHistory orderId={paymentOrderId} onClose={closePaymentModal} />
+      )}
+      <table className="w-full overflow-x-scroll rounded-lg border-collapse ">
       <thead className="bg-[#FFB200] text-sm">
         <tr>
           {[
@@ -58,6 +104,7 @@ const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
             "Paid Amount",
             "Due Amount",
             "Message",
+            "Transaction List",
             // "Delivery Date",
             "Profits",
             "Status",
@@ -108,7 +155,20 @@ const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
                 {((order?.priceOrBudget || order?.salaryOrBudget || 0) - (order.paid_amount || 0)).toFixed(2)}
               </td>
               <td className="py-3 border-r border-r-[#FFB200]">
-                <ChatInterface />
+                <button
+                  onClick={() => openChatModal(order.userid)}
+                  className="rounded-md bg-[#FFB200] px-3 py-1 text-black transition-all hover:bg-black hover:text-white"
+                >
+                  Message
+                </button>
+              </td>
+              <td className="py-3 border-r border-r-[#FFB200]">
+                <button
+                  onClick={() => openPaymentModal(order._id)}
+                  className="rounded-md bg-[#FFB200] px-3 py-1 text-black transition-all hover:bg-black hover:text-white"
+                >
+                  Transaction List
+                </button>
               </td>
               {/* <td className="py-3 border-r border-r-[#FFB200]">
                 {formatToDDMMYYYY(order.project_deadline)}
@@ -137,6 +197,7 @@ const OrdersTable = ({ orders }: { orders: OrderData[] }) => {
           ))}
       </tbody>
     </table>
+    </>
   );
 };
 

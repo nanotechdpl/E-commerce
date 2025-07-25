@@ -219,7 +219,7 @@ export const MainChatArea = () => {
           <div className="flex-1 relative">
             <input
               type="text"
-              value={input}
+              value={input || ""}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && sendMessage(e)}
               placeholder="Type your message..."

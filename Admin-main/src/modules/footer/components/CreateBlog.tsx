@@ -276,11 +276,11 @@ const CreateBlog = () => {
                       src={
                         row?.photo && row.photo.startsWith("http")
                           ? row.photo
-                          : "/placeholder.png" // Use a valid placeholder image in your public folder
+                          : "/placeholder.png"
                       }
                       width={70}
                       height={50}
-                      alt="image"
+                      alt={row?.title || "Blog Image"}
                       className="rounded-md w-[70px] h-[70px] object-fill"
                     />
                   </td>

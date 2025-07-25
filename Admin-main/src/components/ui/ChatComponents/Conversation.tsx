@@ -62,6 +62,7 @@ const Conversation = () => {
                   id="default-search"
                   className="placeholdeer-slate-300 block h-8 w-full rounded-lg border border-slate-300 bg-white p-4 ps-10 text-sm outline-none "
                   placeholder="Search messages or users"
+                  value={""}
                 />
               </div>
             </div>
@@ -80,8 +81,7 @@ const Conversation = () => {
                     <label className="relative inline-flex cursor-pointer items-center">
                       <input
                         type="checkbox"
-                        value=""
-                        className="peer sr-only"
+                        value={""}
                       />
                       <div className="peer h-6 w-11 rounded-full bg-slate-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300    rtl:peer-checked:after:-translate-x-full"></div>
                     </label>
@@ -93,8 +93,7 @@ const Conversation = () => {
                     <label className="relative inline-flex cursor-pointer items-center">
                       <input
                         type="checkbox"
-                        value=""
-                        className="peer sr-only"
+                        value={""}
                       />
                       <div className="peer h-6 w-11 rounded-full bg-slate-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300    rtl:peer-checked:after:-translate-x-full"></div>
                     </label>
@@ -106,8 +105,7 @@ const Conversation = () => {
                     <label className="relative inline-flex cursor-pointer items-center">
                       <input
                         type="checkbox"
-                        value=""
-                        className="peer sr-only"
+                        value={""}
                       />
                       <div className="peer h-6 w-11 rounded-full bg-slate-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300    rtl:peer-checked:after:-translate-x-full"></div>
                     </label>

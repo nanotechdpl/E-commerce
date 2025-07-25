@@ -1,2 +1,2 @@
-const Payment = require('../models/payment.model');
-const Refund = require('../models/refund.model'); 
+const Payment = require('../models/Payment');
+const Refund = require('../models/Refund'); 

@@ -1,4 +1,5 @@
 export type IPayment = {
+  _id?: string; // Added to match mock data
   sl: number;
   id: number;
   ProjectName: string;

@@ -112,19 +112,23 @@ const UsersTable = ({ users }: { users: IUser[] }) => {
                 </td> */}
                 <td className="py-3 border-r border-r-black">
                   <div
-                    className={`${poppins.className
-                      } font-bold text-white text-[10.22px] leading-[15.34px] w-22 h-4 ${item.isDeleted
+                    className={
+                      `${poppins.className} font-bold text-white text-[10.22px] leading-[15.34px] w-22 h-4 ` +
+                      (item.status === "active"
+                        ? "bg-[#00850D]"
+                        : item.status === "block"
+                        ? "bg-[#FF3D00E3]"
+                        : item.status === "suspend"
+                        ? "bg-[#E4A81D]"
+                        : item.status === "dormant"
+                        ? "bg-[#3B6DCB]"
+                        : item.status === "closed"
                         ? "bg-[#DE1D1D]"
-                        : item.isBlocked
-                          ? "bg-[#FF3D00E3]"
-                          : "bg-[#00850D]"
-                      } rounded-sm mx-auto`}
+                        : "bg-[#322488]") +
+                      " rounded-sm mx-auto"
+                    }
                   >
-                    {item.isDeleted
-                      ? "Deleted"
-                      : item.isBlocked
-                        ? "Blocked"
-                        : "Active"}
+                    {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : "Unknown"}
                   </div>
                 </td>
                 <td className="py-3">

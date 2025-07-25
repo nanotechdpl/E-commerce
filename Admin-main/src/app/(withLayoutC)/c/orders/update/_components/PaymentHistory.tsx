@@ -1,57 +1,37 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface PaymentHistoryModalProps {
   onClose: () => void;
+  orderId: string;
 }
 
-export default function PaymentHistory({ onClose }: PaymentHistoryModalProps) {
+export default function PaymentHistory({ onClose, orderId }: PaymentHistoryModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [payments, setPayments] = useState<any[]>([]);
 
-  // Sample data
-  const payments = [
-    {
-      no: 1,
-      paymentId: "P0001",
-      accountName: "Indian Bank",
-      amount: "110 usd",
-      paymentDay: "UTC:03-02-25, 02:05 PM",
-    },
-    {
-      no: 2,
-      paymentId: "P0001",
-      accountName: "Indian Bank",
-      amount: "110 usd",
-      paymentDay: "UTC:03-02-25, 02:05 PM",
-    },
-    {
-      no: 3,
-      paymentId: "P0001",
-      accountName: "Indian Bank",
-      amount: "120 usd",
-      paymentDay: "UTC:03-02-25, 02:05 PM",
-    },
-    {
-      no: 4,
-      paymentId: "P0001",
-      accountName: "Indian Bank",
-      amount: "140 usd",
-      paymentDay: "UTC:03-02-25, 02:05 PM",
-    },
-    {
-      no: 5,
-      paymentId: "P0001",
-      accountName: "Indian Bank",
-      amount: "140 usd",
-      paymentDay: "UTC:03-02-25, 02:05 PM",
-    },
-  ];
+  useEffect(() => {
+    async function fetchPayments() {
+      try {
+        const res = await fetch(`/api/v1/payment/order/${orderId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPayments(data.payments || []);
+        } else {
+          setPayments([]);
+        }
+      } catch (err) {
+        setPayments([]);
+      }
+    }
+    if (orderId) fetchPayments();
+  }, [orderId]);
 
   const filteredPayments = payments.filter((payment) =>
     Object.values(payment).some((value) =>
-      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+      value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
 

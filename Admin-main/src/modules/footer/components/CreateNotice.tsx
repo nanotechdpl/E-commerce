@@ -152,7 +152,12 @@ const CreateNotice: React.FC = () => {
       }
     } else {
       try {
-        console.log("Form Data:", formData);
+        const { title, photo, date } = formData;
+        if (!title || !photo || !date) {
+          toast.error("Please fill in all required fields (title, photo, date)");
+          setLoading(false);
+          return;
+        }
         const res = await instance.post(`/notice`, formData);
         if (res.data && res.data.success) {
           dispatch(addNotice(res.data));
@@ -271,7 +276,7 @@ const CreateNotice: React.FC = () => {
                       {formData?.photo ? (
                         <Image
                           src={formData?.photo}
-                          alt="Uploaded Preview"
+                          alt={formData?.title || "Notice Image"}
                           width={50}
                           height={50}
                           className="rounded-full w-[50px] h-[50px] object-center object-fill"
@@ -348,7 +353,7 @@ const CreateNotice: React.FC = () => {
                       <div className="flex justify-center gap-2">
                         <Image
                           src={notice.photo || "/default-notice.png"}
-                          alt={notice.title}
+                          alt={notice.title || "Notice Image"}
                           width={50}
                           height={50}
                           className="rounded-full w-[50px] h-[50px] object-center object-fill"

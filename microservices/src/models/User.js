@@ -91,25 +91,41 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", async function (next) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
-    const counterDoc = await UserCounterModel.findOneAndUpdate(
-      { modelName: "User" },
-      { $inc: { sequenceValue: 1 } },
-      { new: true, upsert: true, session }
-    );
-
-    const userId = counterDoc.sequenceValue.toString().padStart(5, "0"); // Ensure UID format like C00001, etc.
-    this.userUID = `C${userId}`;
-
-    await session.commitTransaction();
-    session.endSession();
-    next();
+    // Check if the connection is a replica set (supports transactions)
+    const isReplicaSet = mongoose.connection.readyState === 1 && mongoose.connection.hosts && mongoose.connection.hosts.length > 1;
+    if (isReplicaSet) {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      try {
+        const counterDoc = await UserCounterModel.findOneAndUpdate(
+          { modelName: "User" },
+          { $inc: { sequenceValue: 1 } },
+          { new: true, upsert: true, session }
+        );
+        const userId = counterDoc.sequenceValue.toString().padStart(5, "0");
+        this.userUID = `C${userId}`;
+        await session.commitTransaction();
+        session.endSession();
+        next();
+      } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error("Error generating userUID:", error);
+        next(error);
+      }
+    } else {
+      // Standalone: no transaction
+      const counterDoc = await UserCounterModel.findOneAndUpdate(
+        { modelName: "User" },
+        { $inc: { sequenceValue: 1 } },
+        { new: true, upsert: true }
+      );
+      const userId = counterDoc.sequenceValue.toString().padStart(5, "0");
+      this.userUID = `C${userId}`;
+      next();
+    }
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     console.error("Error generating userUID:", error);
     next(error);
   }

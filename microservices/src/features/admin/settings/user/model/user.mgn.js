@@ -54,11 +54,10 @@ const adminupdateuserstatusModel = async (data, res) => {
     const { userid, status } = data;
     await userModel.findByIdAndUpdate(userid, {
       $set: {
-        user_blocked: status,
+        status: status,
       },
     });
-
-    return "sucess";
+    return "success";
   } catch (error) {
     console.log(error);
     return error.message;

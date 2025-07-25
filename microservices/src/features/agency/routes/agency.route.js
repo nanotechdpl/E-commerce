@@ -17,6 +17,7 @@ const {
   getAgencyExceptPending,
   createAgency,
   getSubscriptionFee,
+  deleteAgency,
 } = require("../controller/agency.controller");
 const isAuthenticateAgency = require("../../../middlewares/isAgencyMiddleWare");
 
@@ -35,6 +36,7 @@ router.post("/login-agency", loginAgency);
 router.get("/get-all", getAllAgencies);
 router.get("/:id", getAgencyById);
 router.put("/update/:id", updateAgency);
+router.delete("/:id", deleteAgency);
 
 router.post("/forgot-password-request", requestPasswordReset);
 router.post("/verify-forgot-password-otp", verifyPasswordResetOTP);

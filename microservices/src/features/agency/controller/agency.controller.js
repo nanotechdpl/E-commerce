@@ -868,6 +868,7 @@ const updateAgency = async (req, res) => {
       employees,
       socialLinks,
       twoFaAuthentication,
+      status, // allow status update
     } = req.body;
 
     if (!id) {
@@ -896,6 +897,7 @@ const updateAgency = async (req, res) => {
       socialLinks: socialLinks,
       twoFaAuthentication: twoFaAuthentication,
     };
+    if (status) updateData.status = status;
 
     const updatedAgency = await AgencyModel.findByIdAndUpdate(
       id,
@@ -908,11 +910,48 @@ const updateAgency = async (req, res) => {
       status: 200,
       successful: true,
       message: "Agency updated successfully.",
+      agency: updatedAgency,
     });
   } catch (error) {
     console.error("Error updating agency:", error);
     res.status(500).json({
       title: "Update Agency",
+      status: 500,
+      successful: false,
+      message: "An internal server error occurred. Please try again later.",
+    });
+  }
+};
+
+// Add deleteAgency controller
+const deleteAgency = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        title: "Delete Agency",
+        status: 400,
+        message: "Agency ID is required.",
+      });
+    }
+    const deleted = await AgencyModel.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({
+        title: "Delete Agency",
+        status: 404,
+        message: "Agency not found.",
+      });
+    }
+    res.status(200).json({
+      title: "Delete Agency",
+      status: 200,
+      successful: true,
+      message: "Agency deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting agency:", error);
+    res.status(500).json({
+      title: "Delete Agency",
       status: 500,
       successful: false,
       message: "An internal server error occurred. Please try again later.",
@@ -1092,6 +1131,7 @@ module.exports = {
   verifyPasswordResetOTP,
   resetPassword,
   updateAgency,
+  deleteAgency,
   changePassword,
   getAgencyById,
   sentOTPFor2FA,

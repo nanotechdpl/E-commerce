@@ -106,6 +106,12 @@ export const CNavItem: navItem[] = [
     url: "/logout",
     image: undefined,
   },
+  {
+    id: 12,
+    title: " Footer",
+    url: "/c/footer",
+    image: undefined, // You can add an icon path if you want
+  },
 ];
 
 export const CAUVNavItem: navItem[] = [

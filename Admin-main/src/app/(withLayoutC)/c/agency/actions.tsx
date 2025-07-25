@@ -51,14 +51,38 @@ export const getSingleAgency = (id: string) => {
   return async (dispatch: Dispatch) => {
     dispatch(fetchingSingleAgency());
     try {
-      const res = await axiosInstance.post(
-        `/admin/user/agency/single/${id}`
-      );
-      const agency = res?.data?.data || null;
+      const res = await axiosInstance.get(`/agency/${id}`);
+      const agency = res?.data?.agency || null;
       dispatch(fetchedSingleAgency(agency));
     } catch (error: any) {
       console.log(error);
       dispatch(singleAgencyFetchingFailed({ error: error?.message }));
+    }
+  };
+};
+
+export const deleteAgency = (id: string) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      await axiosInstance.delete(`/agency/${id}`);
+      // Optionally, you can dispatch an action to remove from state or refetch
+      dispatch(getAllAgencies());
+    } catch (error: any) {
+      console.log(error);
+      // Optionally, dispatch an error action
+    }
+  };
+};
+
+export const updateAgencyStatus = (id: string, status: string) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      await axiosInstance.put(`/agency/update/${id}`, { status });
+      dispatch(getSingleAgency(id)); // Refresh single agency
+      dispatch(getAllAgencies()); // Refresh list
+    } catch (error: any) {
+      console.log(error);
+      // Optionally, dispatch an error action
     }
   };
 };

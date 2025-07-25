@@ -3,6 +3,9 @@ import { Poppins } from "next/font/google";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
 import { deleteUser } from "../../actions";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -11,6 +14,15 @@ const poppins = Poppins({
 
 function Page() {
   const user: any = useSelector((state: RootState) => state.users?.userById);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
+  const handleDelete = async () => {
+    setDeleting(true);
+    await dispatch(deleteUser(user?._id));
+    setDeleting(false);
+    router.push("/c/allUsers");
+  };
   console.log("user from setting: ", user);
   return (
     <div className="w-full h-[calc(h-screen - 76px)] mt-[150px]">
@@ -35,10 +47,11 @@ function Page() {
               Cancel
             </button>
             <button
-              onClick={() => deleteUser(user?._id)}
+              onClick={handleDelete}
               className={`bg-[#EE404C] text-white ${poppins.className} font-medium text-base rounded-[5px] w-[185.15px] h-[39.68px]`}
+              disabled={deleting}
             >
-              Delete Account
+              {deleting ? "Deleting..." : "Delete Account"}
             </button>
           </div>
         </div>

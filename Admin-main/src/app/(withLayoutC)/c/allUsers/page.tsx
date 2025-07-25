@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import { IUser } from "@/types/user";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface UserAnalytics {
   totaluser: any[];
@@ -37,8 +38,13 @@ const AllUsers: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   
   const dispatch = useDispatch();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const statusChangedUser = searchParams.get("statusChangedUser");
+  const newStatus = searchParams.get("newStatus");
 
   const actions = useMemo(
     () => bindActionCreators({ getAllAdminUsers, getUserAnalytics }, dispatch),
@@ -92,7 +98,22 @@ const AllUsers: React.FC = () => {
   useEffect(() => {
     actions?.getAllAdminUsers();
     actions?.getUserAnalytics();
-  }, [actions]);
+    // Listen for route changes to re-fetch users
+    const handleRouteChange = () => {
+      actions?.getAllAdminUsers();
+    };
+    router.events?.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events?.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [actions, router]);
+
+  useEffect(() => {
+    if (statusChangedUser && newStatus) {
+      setStatusMessage(`Status for user ${statusChangedUser} changed to ${newStatus}`);
+      setTimeout(() => setStatusMessage(null), 4000);
+    }
+  }, [statusChangedUser, newStatus]);
 
   return (
     <div className="w-full p-2 md:py-5 2xl:p-10">
@@ -112,6 +133,11 @@ const AllUsers: React.FC = () => {
             {/* <CustomSearch onSearch={onSearch} /> */}
             <ActionBar />
           </div>
+          {statusMessage && (
+            <div className="w-full bg-green-100 text-green-800 text-center py-2 mb-2 rounded">
+              {statusMessage}
+            </div>
+          )}
           <UsersTable users={users?users:[]} />
 
           <div className="flex flex-row justify-center w-full mt-6">
